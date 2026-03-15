@@ -1,26 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --hm-brown-dark: #5D4037;
+  --hm-brown: #8D6E63;
+  --hm-brown-light: #A1887F;
+  --hm-cream: #FFF8E1;
+  --hm-parchment: #F5E6CA;
+  --hm-gold: #FFB300;
+  --hm-gold-dark: #FF8F00;
+  --hm-green: #7CB342;
+  --hm-green-dark: #558B2F;
+  --hm-sky: #81D4FA;
+  --hm-sunset: #FF7043;
+  --hm-text: #3E2723;
+  --hm-text-light: #6D4C41;
+  --hm-wood: #4E342E;
+  --hm-wood-light: #795548;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-hm-brown-dark: var(--hm-brown-dark);
+  --color-hm-brown: var(--hm-brown);
+  --color-hm-brown-light: var(--hm-brown-light);
+  --color-hm-cream: var(--hm-cream);
+  --color-hm-parchment: var(--hm-parchment);
+  --color-hm-gold: var(--hm-gold);
+  --color-hm-gold-dark: var(--hm-gold-dark);
+  --color-hm-green: var(--hm-green);
+  --color-hm-green-dark: var(--hm-green-dark);
+  --color-hm-sky: var(--hm-sky);
+  --color-hm-sunset: var(--hm-sunset);
+  --color-hm-text: var(--hm-text);
+  --color-hm-text-light: var(--hm-text-light);
+  --color-hm-wood: var(--hm-wood);
+  --color-hm-wood-light: var(--hm-wood-light);
+  --font-pixel: 'Press Start 2P', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, #87CEEB 0%, #FFE0B2 40%, #A5D6A7 60%, #66BB6A 100%);
+  background-attachment: fixed;
+  color: var(--hm-text);
+  font-family: 'Press Start 2P', monospace;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--hm-brown); }
+::-webkit-scrollbar-thumb {
+  background: var(--hm-gold);
+  border: 2px solid var(--hm-brown);
+  border-radius: 4px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+@keyframes victory-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.05); }
+}
+@keyframes pixel-fade-in {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes cat-idle {
+  0%, 49% { transform: translateY(0); }
+  50%, 100% { transform: translateY(-3px); }
+}
+
+.animate-float { animation: float 2s ease-in-out infinite; }
+.animate-shake { animation: shake 0.3s ease-in-out infinite; }
+.animate-victory { animation: victory-bounce 0.6s ease-in-out infinite; }
+.animate-pixel-fade { animation: pixel-fade-in 0.3s ease-out forwards; }
+.animate-cat-idle { animation: cat-idle 1s steps(2) infinite; }
+
+/* Harvest Moon wooden border */
+.wood-border {
+  border: 4px solid var(--hm-wood);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 0 2px var(--hm-brown-light),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.wood-border-inset {
+  border: 3px solid var(--hm-brown);
+  border-radius: 6px;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.hm-screen {
+  background: var(--hm-cream);
+  border-radius: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+textarea.hm-input {
+  background: var(--hm-parchment);
+  border: 3px solid var(--hm-brown);
+  border-radius: 6px;
+  color: var(--hm-text);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  line-height: 1.8;
+  padding: 8px;
+  resize: none;
+  outline: none;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+textarea.hm-input::placeholder { color: var(--hm-brown-light); opacity: 0.7; }
+textarea.hm-input:focus {
+  border-color: var(--hm-gold);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px var(--hm-gold);
+}
+
+.hm-btn {
+  background: linear-gradient(180deg, var(--hm-gold) 0%, var(--hm-gold-dark) 100%);
+  border: 3px solid var(--hm-wood);
+  border-radius: 8px;
+  color: var(--hm-wood);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--hm-brown-dark), 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s;
+  text-transform: uppercase;
+}
+.hm-btn:hover {
+  background: linear-gradient(180deg, #FFC107 0%, var(--hm-gold) 100%);
+  transform: translateY(-1px);
+}
+.hm-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--hm-brown-dark);
+}
+.hm-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+input.hm-password {
+  background: var(--hm-parchment);
+  border: 3px solid var(--hm-brown);
+  border-radius: 8px;
+  color: var(--hm-text);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  padding: 10px 14px;
+  outline: none;
+  text-align: center;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 300px;
+}
+input.hm-password:focus {
+  border-color: var(--hm-gold);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px var(--hm-gold);
 }
