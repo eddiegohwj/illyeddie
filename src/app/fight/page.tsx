@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import GameBoyFrame from "@/components/GameBoyFrame";
 import CatJudge from "@/components/CatJudge";
@@ -16,12 +16,14 @@ interface Submission {
 
 export default function FightPage() {
   const router = useRouter();
-  const [illySubmission, setIllySubmission] = useState<Submission | null>(null);
-  const [eddieSubmission, setEddieSubmission] = useState<Submission | null>(null);
+  const [illySubmitted, setIllySubmitted] = useState(false);
+  const [eddieSubmitted, setEddieSubmitted] = useState(false);
   const [judgeState, setJudgeState] = useState<"idle" | "waiting" | "thinking" | "verdict" | "error">("idle");
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { playSubmit, playThinking, playVerdict, playError } = useSounds();
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasPlayedThinking = useRef(false);
 
   useEffect(() => {
     const auth = sessionStorage.getItem("catcourt-auth");
@@ -30,55 +32,106 @@ export default function FightPage() {
     }
   }, [router]);
 
-  const callJudge = useCallback(async (illy: Submission, eddie: Submission) => {
-    setJudgeState("thinking");
-    setError(null);
-    playThinking();
+  // Poll server for status updates
+  const pollStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/status");
+      if (!res.ok) return;
+      const data = await res.json();
+
+      setIllySubmitted(data.illySubmitted);
+      setEddieSubmitted(data.eddieSubmitted);
+
+      if (data.verdict) {
+        // Verdict is ready!
+        setVerdict(data.verdict);
+        setJudgeState("verdict");
+        playVerdict();
+        // Stop polling
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
+      } else if (data.judging) {
+        if (!hasPlayedThinking.current) {
+          playThinking();
+          hasPlayedThinking.current = true;
+        }
+        setJudgeState("thinking");
+      } else if (data.illySubmitted || data.eddieSubmitted) {
+        setJudgeState("waiting");
+      }
+    } catch {
+      // Silently retry on next poll
+    }
+  }, [playVerdict, playThinking]);
+
+  // Start polling when page loads
+  useEffect(() => {
+    // Initial check
+    pollStatus();
+
+    // Poll every 2 seconds
+    pollingRef.current = setInterval(pollStatus, 2000);
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, [pollStatus]);
+
+  const handleSubmit = async (person: "illy" | "eddie", data: Submission) => {
+    playSubmit();
 
     try {
-      const res = await fetch("/api/judge", {
+      const res = await fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ illy, eddie }),
+        body: JSON.stringify({ person, ...data }),
       });
 
-      if (!res.ok) throw new Error("Judge failed");
+      if (!res.ok) throw new Error("Submit failed");
 
-      const data = await res.json();
-      setVerdict(data);
-      setJudgeState("verdict");
-      playVerdict();
+      const result = await res.json();
+
+      if (person === "illy") setIllySubmitted(true);
+      else setEddieSubmitted(true);
+
+      // If both submitted, trigger a status check immediately
+      if (result.illySubmitted && result.eddieSubmitted) {
+        setJudgeState("thinking");
+        if (!hasPlayedThinking.current) {
+          playThinking();
+          hasPlayedThinking.current = true;
+        }
+        // Immediate status check to trigger judging
+        setTimeout(pollStatus, 500);
+      } else {
+        setJudgeState("waiting");
+      }
     } catch {
       playError();
-      setError("JUDGE WHISKERS HAD A HAIRBALL! TRY AGAIN.");
-      setJudgeState("error");
+      setError("SUBMISSION FAILED! TRY AGAIN.");
     }
-  }, [playThinking, playVerdict, playError]);
-
-  useEffect(() => {
-    if (illySubmission && eddieSubmission && judgeState === "waiting") {
-      callJudge(illySubmission, eddieSubmission);
-    }
-  }, [illySubmission, eddieSubmission, judgeState, callJudge]);
-
-  const handleIllySubmit = (data: Submission) => {
-    playSubmit();
-    setIllySubmission(data);
-    if (!eddieSubmission) setJudgeState("waiting");
   };
 
-  const handleEddieSubmit = (data: Submission) => {
-    playSubmit();
-    setEddieSubmission(data);
-    if (!illySubmission) setJudgeState("waiting");
-  };
-
-  const handleNewCase = () => {
-    setIllySubmission(null);
-    setEddieSubmission(null);
+  const handleNewCase = async () => {
+    try {
+      await fetch("/api/reset", { method: "POST" });
+    } catch {
+      // Continue even if reset fails
+    }
+    setIllySubmitted(false);
+    setEddieSubmitted(false);
     setVerdict(null);
     setJudgeState("idle");
     setError(null);
+    hasPlayedThinking.current = false;
+
+    // Restart polling
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    pollingRef.current = setInterval(pollStatus, 2000);
   };
 
   return (
@@ -98,27 +151,13 @@ export default function FightPage() {
       {error && (
         <div className="wood-border bg-hm-parchment p-3 mb-4 text-center">
           <p className="text-hm-sunset" style={{ fontSize: "7px" }}>{error}</p>
-          <div className="flex justify-center gap-3 mt-3">
-            <button
-              className="hm-btn"
-              style={{ fontSize: "7px" }}
-              onClick={() => {
-                setError(null);
-                if (illySubmission && eddieSubmission) {
-                  callJudge(illySubmission, eddieSubmission);
-                }
-              }}
-            >
-              RETRY
-            </button>
-            <button
-              className="hm-btn"
-              style={{ fontSize: "7px" }}
-              onClick={handleNewCase}
-            >
-              NEW CASE
-            </button>
-          </div>
+          <button
+            className="hm-btn mt-3"
+            style={{ fontSize: "7px" }}
+            onClick={() => setError(null)}
+          >
+            OK
+          </button>
         </div>
       )}
 
@@ -152,18 +191,18 @@ export default function FightPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_180px_1fr] gap-4 lg:gap-6 items-start">
           <InputPanel
             person="illy"
-            onSubmit={handleIllySubmit}
+            onSubmit={(data) => handleSubmit("illy", data)}
             disabled={judgeState === "thinking"}
-            submitted={!!illySubmission}
+            submitted={illySubmitted}
           />
           <div className="flex justify-center lg:pt-8 order-first lg:order-none">
             <CatJudge state={judgeState === "error" ? "idle" : judgeState} />
           </div>
           <InputPanel
             person="eddie"
-            onSubmit={handleEddieSubmit}
+            onSubmit={(data) => handleSubmit("eddie", data)}
             disabled={judgeState === "thinking"}
-            submitted={!!eddieSubmission}
+            submitted={eddieSubmitted}
           />
         </div>
       )}
