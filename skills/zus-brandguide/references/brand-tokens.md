@@ -360,6 +360,32 @@ The brand guide describes marketing pieces. For apps people use all day, apply t
 
 ---
 
+## Data-viz tokens (charts in apps and dashboards)
+
+> **Added 2026-09-27.** The brand guide has no chart palette. These steps are tints and shades of the official accent hues only (no new hues), validated with the `dataviz` skill's `validate_palette.js` in both modes. App UI rules still apply: no Luxury Gold, no Sunny Yellow.
+
+| Key | Source hue | Light (on `#FFFFFF`) | Dark (on `#2C2C2E`) |
+|---|---|---|---|
+| `--viz-1` | ZUS Blue | `#4050A6` (tint 25, 7.2:1) | `#7385E6` (4.1:1) |
+| `--viz-2` | Vibrant Orange | `#DE5303` (shade 5, 3.9:1) | `#EB5F10` (tint 5, 4.1:1) |
+| `--viz-3` | Sky Blue | `#1296BF` (shade 20, 3.4:1) | `#149FCB` (shade 15, 4.6:1) |
+| `--viz-4` | Fresh Green | `#3D973E` (shade 15, 3.7:1) | `#44A945` (shade 5, 4.7:1) |
+| `--viz-critical` | status danger | `#B42318` (6.6:1) | `#FDA29B` (7.2:1) |
+| `--viz-grid` | neutral | `#EDEDF0` | `#3A3A3C` |
+| `--viz-axis` | neutral | `#C7C7CC` | `#545458` |
+
+**Validator results (adjacent pairs: lines, stacked bars):** all checks PASS in both modes. Worst CVD ΔE 17.6 light / 18.9 dark (target ≥ 8). Worst normal-vision ΔE 18.3 / 19.7 (floor 15). All marks ≥ 3:1 on the card.
+
+Rules:
+- **Order is fixed**: blue, orange, sky, green. Assign in order, never cycle. A 5th series folds into "Other".
+- **Why not ZUS Blue `#001688` as a series:** it is outside the lightness band in light mode and 1.0 to 1.2:1 on graphite in dark mode. `--viz-1` is its tint.
+- **Scatter, bubble, small multiples (any two marks can touch):** light: slots 1-3 pass all-pairs. Dark: only slots 1-2 pass (sky vs blue ΔE 5.5, green vs orange ΔE 5.2 under deuteranopia). Use 2 series or facets there.
+- **A series that means bad** (late deliveries, errors, stock-outs) uses `--viz-critical`, never slot 2 orange. Never show orange and critical in the same chart.
+- **Text never uses a series color.** Labels and values use `--brand-text` / `--brand-text-muted`; a line key or swatch next to the text carries the identity.
+- **Sequential (heatmaps):** use the ZUS Blue tint scale above, light to dark. Not the categorical slots.
+
+---
+
 ## CSS Variables (ready to paste)
 
 ```css
