@@ -36,14 +36,13 @@ Applies ZUS Coffee's official brand identity (Part 02, 2025) to any visual or wr
 
 Accents are used **sparingly**. Full values, tints (90% to 10%) and the measured contrast table are in `references/brand-tokens.md` ("Accent Colours"). **Sunny Yellow + ZUS Blue: marketing only, 10% of the area or less, never a warning colour, never together with Luxury Gold, not in app UI.**
 
-### Logo rules (summary, Part 02 "Configurations")
-- Full colour on white or light backgrounds (default).
-- Black colour on white, only when full colour is technically impossible.
-- Inverted white on **solid ZUS Blue only** (only the logotype turns white).
-- Inverted black on **solid black only**.
-- Anything else (photos, graphite dark mode, gold, brown, tints): the full-colour logo on a white plate.
+### Logo rules (summary, Part 02 "Configurations" + "Logo Variation (Reversed)")
+- **Light backgrounds** (white, light solids such as sand): full colour, the entire logo as is. This is the default.
+- **Black colour**: on white or light, only when full colour is technically impossible.
+- **Dark backgrounds** (ZUS Blue, black, dark brown, deep colour blocks, dark imagery): the **white version** (white face, no circle, white logotype).
+- Anything the guide does not cover (mid-tones, busy photos, graphite UI dark mode): full colour on a white plate.
 - Never make a white or black logo with a CSS filter. Never alter, stretch or add effects.
-- Clear space = mark width on all sides
+- Clear space = mark width on all sides; same minimum size for every version.
 
 ### Signature tagline
 > a Necessity, not a **Luxury**
@@ -61,17 +60,16 @@ Accents are used **sparingly**. Full values, tints (90% to 10%) and the measured
 - Use these for any ZUS artifact needing icons. The *full* official suite lives in the Company Brand PowerPoint template (not bundled here) — note that if a needed icon is missing.
 
 ### Logo assets (`assets/logo/`, SVG + transparent PNG)
-| File | Configuration | Background |
-|---|---|---|
-| `zus-vertical-lockup-full-color-light-bg` / `zus-logomark-full-color-light-bg` | Full colour (official file) | White / light |
-| `zus-vertical-lockup-black-on-white` / `zus-logomark-black-on-white` | Black colour | White / light |
-| `zus-vertical-lockup-inverted-white-on-zus-blue` / `zus-logomark-inverted-white-on-zus-blue` | Inverted white | Solid `#001688` only |
-| `zus-vertical-lockup-inverted-black-on-black` / `zus-logomark-inverted-black-on-black` | Inverted black | Solid `#000000` only |
+| Layout | Full colour (light bg) | Black (light bg, fallback) | White (dark bg) |
+|---|---|---|---|
+| Vertical lockup | `zus-vertical-lockup-full-color-light-bg` | `zus-vertical-lockup-black-on-white` | `zus-vertical-lockup-white` |
+| Logomark | `zus-logomark-full-color-light-bg` | `zus-logomark-black-on-white` | `zus-logomark-white` |
+| Horizontal lockup ⚠ rebuilt | `zus-horizontal-lockup-full-color-light-bg` | `zus-horizontal-lockup-black-on-white` | `zus-horizontal-lockup-white` |
 
-- The full-colour files come from the brand team's Illustrator files. The black and inverted files are the same geometry with **fills changed only** (made 2026-09-27 from Part 02 "Configurations").
-- ⚠ **Match the file to its background.** An inverted file on any other colour shows a visible circle edge or an invisible mark. A full-colour file on ZUS Blue makes the logotype disappear (blue on blue).
-- **Still missing:** the horizontal lockup and wordmark-only. Do not rebuild them from the vertical file. Ask the user for the brand PDF or AI file.
-- ZUS Blue is `#001688`, measured from the official logo files (corrected 2026-07-12 from the earlier `#16277A` guess).
+- The 2 full-colour vertical/mark files are official (brand team's Illustrator files). The black and white files are the same geometry with fills changed (the white version drops the circle, as the guide shows).
+- ⚠ The **horizontal** files are rebuilt from the official shapes with measured scale and spacing. Tell the user they are rebuilt and should be verified; replace them when the brand PDF is available.
+- **Not bundled:** one-line "ZUS COFFEE®" wordmark. Do not build it by scaling the small COFFEE.
+- ZUS Blue is `#001688`, measured from the official logo files.
 
 ## Output rules
 

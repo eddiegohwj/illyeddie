@@ -19,7 +19,7 @@
 - **Hex**: `#FFFFFF`
 - **RGB**: 255 / 255 / 255
 - **CMYK**: 0 / 0 / 0 / 0
-- **Use**: Backgrounds, reversed type on ZUS Blue, the logotype in the inverted logo configurations
+- **Use**: Backgrounds, reversed type on ZUS Blue, the white logo version on dark backgrounds
 
 ### Luxury Gold (Supporting)
 - **Hex**: `#C9A063`
@@ -170,25 +170,43 @@ The guide: accent colours "have higher brightness and saturation to capture atte
 3. **Symbol only** — Kaldi circle mark alone
 4. **Wordmark only** — "ZUS®" + "COFFEE" or "ZUS COFFEE®" text only
 
-### Configurations (official, Part 02 "Configurations")
+### Which logo on which background (Part 02 "Configurations" + "Logo Variation (Reversed)")
 
-The logo must be used in full colour. The guide allows exactly 4 configurations:
+The logo is used in full colour by default. The white version is only for backgrounds where the full-colour logo lacks contrast.
 
-| Configuration | Background | Files (`assets/logo/`) |
+| Background | Logo | Source in the guide |
 |---|---|---|
-| Full colour | White or light | `zus-vertical-lockup-full-color-light-bg.*`, `zus-logomark-full-color-light-bg.*` |
-| Black colour | White or light, **only when full colour is technically impossible** | `zus-vertical-lockup-black-on-white.*`, `zus-logomark-black-on-white.*` |
-| Inverted white | **Solid ZUS Blue `#001688` only.** ONLY the logotype (ZUS, COFFEE, ®) is white; the mark keeps ZUS Blue, so its circle merges into the background. | `zus-vertical-lockup-inverted-white-on-zus-blue.*`, `zus-logomark-inverted-white-on-zus-blue.*` |
-| Inverted black | **Solid black `#000000` only.** The logotype is white; the mark is black, so its circle merges into the background. | `zus-vertical-lockup-inverted-black-on-black.*`, `zus-logomark-inverted-black-on-black.*` |
+| White, light, light solids (for example sand) | **Full colour, the entire logo as is** | "Reversed on light backgrounds: use the entire logo as is" |
+| White or light, when full colour is technically impossible | **Black colour** | Configurations: "use the solid black brand mark" |
+| Dark solids (ZUS Blue, black, dark brown), deep colour blocks, dark imagery | **White version**: white face, no circle, white logotype | "Reversed on dark backgrounds: use the white version"; Configurations: inverted white on solid blue, inverted black on solid black |
+| Anything the guide does not cover (mid-tones, busy photos, graphite UI dark mode) | Full colour on a white plate, or ask the brand team | |
 
-- The black and inverted files were made from the official full-colour vectors by **changing fills only**. The geometry is the brand team's. Black is `#000000` (Elegant Black, Pantone Black C); the guide's own render shows `#1D1D1B`, which is Illustrator's default rich black.
-- Any other background (photography, graphite dark mode, brown, gold, a tint): **put the full-colour logo on a white plate**, or ask the brand team. Do not pick a configuration the guide does not list.
+### Files (`assets/logo/`, each as SVG + transparent PNG)
+
+| Layout | Full colour | Black colour | White version |
+|---|---|---|---|
+| Vertical lockup (mark above ZUS / COFFEE) | `zus-vertical-lockup-full-color-light-bg` (official) | `zus-vertical-lockup-black-on-white` | `zus-vertical-lockup-white` |
+| Logomark (mark + ®) | `zus-logomark-full-color-light-bg` (official) | `zus-logomark-black-on-white` | `zus-logomark-white` |
+| Horizontal lockup (mark left of ZUS / COFFEE) ⚠ rebuilt | `zus-horizontal-lockup-full-color-light-bg` | `zus-horizontal-lockup-black-on-white` | `zus-horizontal-lockup-white` |
+
+- **Official:** the 2 full-colour files come from the brand team's Illustrator files.
+- **Derived (fills changed only):** the black and white files use the official geometry. Black = `#000000` (Elegant Black, Pantone Black C); the guide's own render shows `#1D1D1B`, Illustrator's default rich black. The white version removes the circle, as the guide's "reversed on dark backgrounds" examples show.
+- ⚠ **Rebuilt, verify with the brand team:** the 3 horizontal files use the official mark and wordmark shapes, arranged with a uniform scale and move only (nothing redrawn or stretched). Scale (wordmark height = 0.664 × mark diameter), gap (0.227 × mark) and vertical centring were measured from the guide page, calibrated against the vertical lockup (0.3% error). **Replace them with the vector extracted from the brand PDF when it is available.**
+- **Not bundled:** the one-line wordmark "ZUS COFFEE®" and mark + one-line. The official files only have COFFEE small under ZUS; scaling it up would change its stroke weight (a modified logo).
 - **Never** make a white or black logo with a CSS filter (`invert()`, `brightness(0)`): the face is white shapes on a blue circle, so a filter inverts the face.
-- Still not bundled: the **horizontal lockup** (mark left of the wordmark) and **wordmark only**. Do not rebuild them from the vertical file; the spacing is not known. Ask for the brand PDF or AI file.
+
+### Example backgrounds (measured from the guide page, NOT palette colours)
+
+| Name | Hex | Logo used on it in the guide |
+|---|---|---|
+| Sand (example light background) | `#CFBBA0` | Full colour |
+| Dark brown (example dark background) | `#432818` | White version |
+
+These are the backgrounds the guide page uses to demonstrate the rule. They are **not** official palette colours (compare Luxury Gold `#C9A063` and Classic Coffee Brown `#522413`). Do not use them as brand colours.
 
 ### Do
 - Use full colour on light/neutral backgrounds
-- Use the inverted versions only on their solid background (ZUS Blue or black)
+- Use the white version on dark solids, deep colour blocks and dark imagery
 - Maintain clear space = mark width on all sides
 - Follow minimum size rules
 - Use only approved background colours
@@ -198,7 +216,7 @@ The logo must be used in full colour. The guide allows exactly 4 configurations:
 - Place on low-contrast or unapproved backgrounds
 - Stretch, rotate, or modify proportions
 - Modify in shape, colour, or orientation
-- Use an inverted version on light, gradient, photographic or any non-solid background
+- Use the white version on light or low-contrast backgrounds
 - Make a white or black version with a CSS filter
 
 ---
