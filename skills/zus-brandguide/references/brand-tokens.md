@@ -232,7 +232,7 @@ Rules:
 - **Separate by lightness, not by hue.** Two neighbours (text vs background, button vs page, active vs inactive) must differ in lightness, not only in color.
 - **Never put red, amber or gold text on a blue surface.** Status colors sit on neutral surfaces only.
 - **Logo:** full-color files only. In dark mode, put the logo on a white plate (`#FFFFFF`, radius ≥ 8px, padding ≥ the clear-space rule). Never make a white logo with a CSS filter.
-- The tagline "a Necessity, not a **Luxury**": light = `--brand-heading` + Gold; dark = `--brand-text` + Gold (gold on graphite 7.6:1).
+- The tagline "a Necessity, not a **Luxury**": light = `--brand-heading` + Gold; dark = `--brand-text` + Gold (gold on graphite 7.0:1).
 
 ## App UI rules (dashboards, portals, internal tools)
 
