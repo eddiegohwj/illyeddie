@@ -7,6 +7,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(ROOT, "..", ".."))
 import sys
 ARTIFACT = "--artifact" in sys.argv          # mono-only build for a published page (no real-brand content)
+BARE = "--bare" in sys.argv                  # stage only, no chrome: embedded twice by compare.html
 FONTS = os.environ.get("POPPINS_DIR", "")
 s = open(os.path.join(REPO, "motion/piece-01/piece.html")).read()
 b64 = lambda p: base64.b64encode(open(p, "rb").read()).decode()
@@ -90,11 +91,11 @@ const COPY = {
 };
 let BRAND = "mono";''')
 rep("const INK = hex(THEME.ink), PAPER = hex(THEME.paper);", "let INK = hex(THEME.ink), PAPER = hex(THEME.paper), ACC = hex(THEME.accent);\nconst mixW = (w) => INK.map((c, j) => w[0] * c + w[1] * PAPER[j] + w[2] * ACC[j]);")
-rep("const BG = track(INK, [[B(6), PAPER], [B(16), INK], [B(27), PAPER], [B(31), INK]]);",
-    "const BG = track([1, 0, 0], [[B(4), [0, 0, 1]], [B(5), [1, 0, 0]], [B(6), [0, 1, 0]], [B(16), [1, 0, 0]], [B(27), [0, 1, 0]], [B(31), [1, 0, 0]]]);   // weights: ink, paper, accent")
+rep("const BG = track(INK, [[B(6), PAPER], [B(16), INK], [B(27), PAPER], [B(31), INK]], SPR.fade);",
+    "const BG = track([1, 0, 0], [[B(4), [0, 0, 1]], [B(5), [1, 0, 0]], [B(6), [0, 1, 0]], [B(16), [1, 0, 0]], [B(27), [0, 1, 0]], [B(31), [1, 0, 0]]], SPR.fade);   // weights: ink, paper, accent; fast color spring")
 rep("const PC = track(INK, [[B(16), PAPER], [B(28), INK]]);", "const PC = track([1, 0, 0], [[B(16), [0, 1, 0]], [B(28), [1, 0, 0]]]);")
 rep("background: rgb(BG(t)),", "background: rgb(mixW(BG(t))),")
-rep("background: rgb(PC(t)),", "background: rgb(mixW(PC(t))),")
+rep("el.pillpath.style.fill = rgb(PC(t));", "el.pillpath.style.fill = rgb(mixW(PC(t)));")
 rep('el.tnow.textContent = fmt(p * 200);', 'el.tnow.textContent = COPY[BRAND].prog(p);')
 rep('el.tip.textContent = "$" + Math.round(1000 + vAt(hx) * 2000).toLocaleString("en-US");', 'el.tip.textContent = COPY[BRAND].tip(vAt(hx));')
 rep("el.band.style.opacity = ob.toFixed(4);", "el.band.style.opacity = (ob * 0.14).toFixed(4);")
@@ -127,16 +128,29 @@ rep('window.READY = document.fonts.ready.then(() => document.fonts.check(`40px "
 # ---- viewer chrome around the 1440 stage
 head, body = s.split("<body>")
 body_inner, tail = body.split("<script>", 1)
-viewer_css = open(os.path.join(ROOT, "viewer.css")).read()
-viewer_top = open(os.path.join(ROOT, "viewer-top.html")).read()
-viewer_js = open(os.path.join(ROOT, "viewer.js")).read()
+if BARE:
+    viewer_css = "  html, body { margin: 0; overflow: hidden; background: var(--canvas); }\n  #fit { position: relative; width: 100vw; height: 100vw; overflow: hidden; }\n  #fit #stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }"
+    viewer_top = "<!--STAGE-->"
+    viewer_js = "\n(() => { const fit = document.getElementById('fit'), st = document.getElementById('stage');\n  const f = () => { st.style.transform = `scale(${fit.clientWidth / 1440})`; };\n  new ResizeObserver(f).observe(fit); f(); })();"
+else:
+    viewer_css = open(os.path.join(ROOT, "viewer.css")).read()
+    viewer_top = open(os.path.join(ROOT, "viewer-top.html")).read()
+    viewer_js = open(os.path.join(ROOT, "viewer.js")).read()
 head = head.replace("<title>One Shape</title>", "<title>One Shape Demo</title>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">").replace("</style>", viewer_css + "\n</style>")
 body_inner = body_inner.replace('<div id="stage">', '<div id="fit"><div id="stage">', 1)
 body_inner = body_inner.rstrip()
 assert body_inner.endswith("</div>")
 body_inner += "</div>"          # close #fit
 page = head + "<body>\n" + viewer_top.replace("<!--STAGE-->", body_inner) + "\n<script>" + tail.replace("</script>\n</body>", viewer_js + "\n</script>\n</body>")
-if not ARTIFACT:
+if BARE:
+    import html as _html
+    shell = open(os.path.join(ROOT, "compare.html.in")).read()
+    shell = shell.replace("{{BARE}}", _html.escape(page, quote=True))
+    shell = shell.replace("{{JS}}", open(os.path.join(ROOT, "compare.js")).read())
+    shell = shell.replace("{{CSS}}", open(os.path.join(ROOT, "viewer.css")).read())
+    open(os.path.join(ROOT, "compare.html"), "w").write(shell)
+    print(f"wrote compare.html ({len(shell) / 1024:.0f} KB)")
+elif not ARTIFACT:
     open(os.path.join(ROOT, "index.html"), "w").write(page)
     print(f"wrote index.html ({len(page) / 1024:.0f} KB)")
 

@@ -17,6 +17,16 @@
 - Direct manipulation: during a drag, the value is a function of the cursor position only. On release, the value springs back from where it was.
 - Liquid indicator: `edges()` puts the leading edge on `SPR.lead` and the trailing edge on `SPR.trail`. The toggle knob uses the same method.
 
+## Liquid (optional, inside the ban list)
+
+Liquid means how the shape MOVES, not a glass material. Tested on piece-01:
+
+- **Area-preserving stretch**: take the shape's own speed (`vel()` = central difference of the pure tracks, so `seek(t)` stays pure). When it widens fast, it also thins: `w' = w·(1+s)`, `h' = h/(1+s)`, `|s| ≤ 0.07`. Stretch the box, never `scale()` the content.
+- **Metaball drop** for knobs and indicators: 2 end caps joined by a neck, drawn as an SVG path (`dropPath()` in piece-01). The leading cap stays full and the trailing cap shrinks a little. Use geometry, not an SVG blur-threshold filter: a filter softens the labels.
+- **Neck only when there is room**: no neck unless the caps are more than one diameter apart. A short stretch (toggle) stays a plain capsule. A dip on a short stretch reads as a V-notch.
+- **Lens**: the inverted labels inside the drop render 8% larger, clipped with `clip-path: path()` to the same drop outline.
+- **Color on the fast spring**: a surface that changes ink ↔ paper passes through mid-gray. Put color on `SPR.fade` so the gray lasts a few frames only.
+
 ## Banned
 
 | Banned | Why |

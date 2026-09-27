@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Shape: Mono vs ZUS</title>
+<style>
+{{CSS}}
+  body { font-family: system-ui, sans-serif; }
+  .top, .bar { width: min(94vw, 1180px); }
+  .pair { width: min(94vw, 1180px); display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .panel { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .panel h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--ui-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+  .panel iframe { width: 100%; aspect-ratio: 1; max-width: 100%; border: 0; border-radius: 16px; display: block; background: var(--ui-line); }
+  @media (max-width: 700px) { .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <div><h1>One Shape: Mono vs ZUS</h1><p>One piece, one clock. Left: mono THEME. Right: THEME read from zus-brandguide tokens.</p></div>
+</div>
+<div class="pair">
+  <div class="panel"><h2>Mono</h2><iframe id="f-mono" title="Mono theme" srcdoc="{{BARE}}"></iframe></div>
+  <div class="panel"><h2>ZUS</h2><iframe id="f-zus" title="ZUS theme" srcdoc="{{BARE}}"></iframe></div>
+</div>
+<div class="bar">
+  <div class="row">
+    <button class="btn" id="play" aria-label="Pause"><svg viewBox="0 0 16 16"><path id="playicon" fill="currentColor" d="M4 2h3v12H4zM9 2h3v12H9z"/></svg></button>
+    <div class="seg" role="group" aria-label="Speed"><button id="sp1" aria-pressed="true">1×</button><button id="sp4" aria-pressed="false">¼×</button></div>
+    <div class="readout" id="readout">Loading…</div>
+  </div>
+  <div id="tl" aria-label="Timeline"><div id="head"></div></div>
+  <div class="hint">Space: play/pause · ← →: step one beat · drag the timeline to scrub · both stages share one clock</div>
+</div>
+<script>
+{{JS}}
+</script>
+</body>
+</html>

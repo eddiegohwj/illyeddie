@@ -20,6 +20,7 @@
   .tab { font-size: 26px; font-weight: 560; }
   .ink { color: var(--ink); } .paper { color: var(--paper); } .muted { color: var(--muted); }
   #pill { position: absolute; left: 0; top: 0; z-index: 1; }
+  #tabs-ink .tab { transform: translate(-50%, -50%) scale(1.08); }   /* lens: labels inside the drop read 8% larger */
   #L-tabs { z-index: 2; }   /* labels sit above the indicator */
   #cursor { position: absolute; left: 0; top: 0; width: 34px; height: 34px; transform-origin: 5px 3px; overflow: visible; }
   svg { display: block; overflow: visible; }
@@ -101,7 +102,7 @@
         <span class="atl label paper" style="left:-24px">Saved</span>
       </div></div>
       <!-- The knob: volume knob -> toggle knob -> tab indicator. One element. -->
-      <div id="pill"></div>
+      <svg id="pill" style="position:absolute;left:0;top:0;overflow:visible"><path id="pillpath"/></svg>
     </div>
     <svg id="cursor" viewBox="0 0 34 34"><path d="M5 3 L5 27 L11.5 21 L16 31 L20 29.2 L15.6 19.4 L24 19.4 Z" fill="#0B0B0B" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/></svg>
   </div>
@@ -272,7 +273,7 @@ const WB = track(300, [[B(2), 92], [B(5), 360], [B(6), 520], [B(11), 440], [B(15
 const W = (t) => WB(t) + EXT(t);
 const H = track(92, [[B(5), 96], [B(6), 300], [B(11), 64], [B(17), 72], [B(20), 380], [B(27), 84], [B(28), 340], [B(29), 220], [B(29.5), 160], [B(31), 72], [B(32), 92]]);
 const R = track(46, [[B(5), 48], [B(6), 36], [B(11), 32], [B(17), 36], [B(20), 28], [B(27), 24], [B(31), 36], [B(32), 46]]);
-const BG = track(INK, [[B(6), PAPER], [B(16), INK], [B(27), PAPER], [B(31), INK]]);
+const BG = track(INK, [[B(6), PAPER], [B(16), INK], [B(27), PAPER], [B(31), INK]], SPR.fade);   // color on the fast spring: mid-gray lasts a few frames only
 
 // ---- Camera: [scale, x, y]. Each state fills about 60% of the frame. Beat 3 pushes in on the loader.
 const CAM = track([2.8, 0, 0], [
@@ -331,6 +332,36 @@ const knobLocalDuring = (t) => knobWorld(t) - SX(t);
 const PL = drag((t) => PE(t)[0], B(12), B(14), (t) => knobLocalDuring(t) - 14);
 const PR = drag((t) => PE(t)[1], B(12), B(14), (t) => knobLocalDuring(t) + 14);
 const PH = track(28, [[B(15), 48], [B(17), 56], [B(28), 28]]);
+const RW = track(28, [[B(15), 48], [B(17), 150], [B(28), 28]]);     // rest length of the drop (knob 28, toggle 48, tab 150)
+
+/* ---- Liquid (pure: velocity = central difference of pure functions) ---- */
+const vel = (f, t, dt = 0.001) => (f(t + dt) - f(t - dt)) / (2 * dt);
+// Area-preserving stretch: when the shape widens fast it also thins, like a drop being pulled.
+function stretch(t) {
+  const rate = vel(W, t) / Math.max(40, W(t)) - vel(H, t) / Math.max(40, H(t));
+  return Math.max(-0.07, Math.min(0.07, rate * 0.018));
+}
+// Metaball drop from x0 to x1: two end caps joined by a neck that thins as the drop stretches.
+// The leading cap stays full; the trailing cap shrinks a little.
+function dropPath(x0, x1, cy, hgt, rest, leadRight) {
+  const R = hgt / 2, len = Math.max(hgt, x1 - x0);
+  x1 = x0 + len;
+  const over = Math.max(0, len / Math.max(rest, hgt) - 1);
+  const gap = len - 4 * R;                                         // neck only when the caps are more than one diameter apart
+  const room = Math.max(0, Math.min(1, gap / (2 * R))) ** 2;         // short stretch (toggle) = plain capsule, long (tabs) = neck
+  const waist = 1 - (1 - Math.max(0.38, 1 - 0.9 * over)) * room;   // 1 = plain capsule
+  const tail = R * (0.78 + 0.22 * waist);
+  const rL = leadRight ? tail : R, rR = leadRight ? R : tail;
+  const a = x0 + rL, c = x1 - rR, m = (a + c) / 2, wh = R * waist, k = (m - a) * 0.55;
+  const f = (n) => n.toFixed(2);
+  if (c - a < 0.5) return `M${f(a)} ${f(cy - R)} A${f(R)} ${f(R)} 0 1 1 ${f(a)} ${f(cy + R)} A${f(R)} ${f(R)} 0 1 1 ${f(a)} ${f(cy - R)}Z`;
+  return `M${f(a)} ${f(cy - rL)} C${f(a + k)} ${f(cy - rL)} ${f(m - k)} ${f(cy - wh)} ${f(m)} ${f(cy - wh)} ` +
+         `C${f(m + k)} ${f(cy - wh)} ${f(c - k)} ${f(cy - rR)} ${f(c)} ${f(cy - rR)} ` +
+         `A${f(rR)} ${f(rR)} 0 0 1 ${f(c)} ${f(cy + rR)} ` +
+         `C${f(c - k)} ${f(cy + rR)} ${f(m + k)} ${f(cy + wh)} ${f(m)} ${f(cy + wh)} ` +
+         `C${f(m - k)} ${f(cy + wh)} ${f(a + k)} ${f(cy + rL)} ${f(a)} ${f(cy + rL)} ` +
+         `A${f(rL)} ${f(rL)} 0 0 1 ${f(a)} ${f(cy - rL)}Z`;
+}
 const PYT = track(0, [[B(20), -146], [B(28), 0]]);            // the tab row moves up into the chart header
 const PC = track(INK, [[B(16), PAPER], [B(28), INK]]);
 
@@ -355,7 +386,7 @@ const $ = (id) => document.getElementById(id);
 const L = {}; for (const k of ["button", "loader", "check", "island", "player", "volume", "tabs", "chart", "cmdk", "toast"]) L[k] = $("L-" + k);
 const el = { world: $("world"), shape: $("shape"), cursor: $("cursor"), arc: $("arc"), tick: $("tick"), pill: $("pill"),
   wave: $("wave"), ppl: $("pp-l"), ppr: $("pp-r"), playbtn: $("playbtn"), pfill: $("prog-fill"), pknob: $("prog-knob"), tnow: $("t-now"),
-  vtrack: $("vol-track"), volc: $("vol-c"), vfill: $("vol-fill"), tabs: [...document.querySelectorAll("#L-tabs .tab")], tabsInk: $("tabs-ink"), line: $("line"), axis: $("axis"),
+  vtrack: $("vol-track"), volc: $("vol-c"), vfill: $("vol-fill"), tabs: [...document.querySelectorAll("#L-tabs .tab")], tabsInk: $("tabs-ink"), pillpath: $("pillpath"), line: $("line"), axis: $("axis"),
   tip: $("tip"), tipdot: $("tipdot"), band: $("band"), bandl: $("bandlbl"), typed: $("typed"), caret: $("caret"), ph: $("ph"),
   field: $("field"), mag: $("mag"), kbd: $("kbd"), hl: $("hl"), rows: [$("row0"), $("row1"), $("row2"), $("row3")] };
 const ARC_C = TAU * 17, TICK_L = 36, CURSOR_PX = 52;
@@ -385,7 +416,7 @@ function seek(tIn, raw = false) {
   el.world.style.transform = `translate(720px,720px) scale(${cs}) translate(${-camX}px,${-cy}px)`;
 
   // Shape
-  const w = W(t), h = H(t), r = Math.min(R(t), h / 2), k = SPRESS(t), sx = SX(t);
+  const st = stretch(t), w = W(t) * (1 + st), h = H(t) / (1 + st), r = Math.min(R(t), h / 2), k = SPRESS(t), sx = SX(t);
   Object.assign(el.shape.style, { width: w + "px", height: h + "px", borderRadius: r + "px", background: rgb(BG(t)),
     transform: `translate(${sx - w / 2}px,${-h / 2}px) scale(${k})`, transformOrigin: `${w / 2}px ${h / 2}px` });
 
@@ -421,13 +452,16 @@ function seek(tIn, raw = false) {
 
   // The knob (pill)
   const ph = PH(t), py = PYT(t), po = clamp01(V.pill(t));
-  Object.assign(el.pill.style, { left: (w / 2 + pl) + "px", top: (h / 2 + py - ph / 2) + "px", width: Math.max(ph * 0.5, pr - pl) + "px",
-    height: ph + "px", borderRadius: ph / 2 + "px", background: rgb(PC(t)), opacity: po.toFixed(4), visibility: po < 0.002 ? "hidden" : "visible" });
+  const leadRight = Math.abs(vel(PR, t)) >= Math.abs(vel(PL, t));
+  const drop = dropPath(w / 2 + pl, w / 2 + pr, h / 2 + py, ph, RW(t), leadRight);
+  el.pill.setAttribute("width", w); el.pill.setAttribute("height", h);
+  el.pillpath.setAttribute("d", drop);
+  el.pillpath.style.fill = rgb(PC(t));
+  Object.assign(el.pill.style, { opacity: po.toFixed(4), visibility: po < 0.002 ? "hidden" : "visible" });
 
   // Tabs: white labels, plus black labels clipped to the indicator, so a label is split exactly at its edge.
   el.tabs.forEach((n) => { n.style.top = py + "px"; });
-  const ct = h / 2 + py - ph / 2, cl = w / 2 + pl, cw = Math.max(ph * 0.5, pr - pl);
-  el.tabsInk.style.clipPath = `inset(${ct}px ${w - cl - cw}px ${h - ct - ph}px ${cl}px round ${ph / 2}px)`;
+  el.tabsInk.style.clipPath = `path("${drop}")`;                // ink labels clipped to the exact drop outline
 
   // Chart
   const top = -h / 2;
