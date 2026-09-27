@@ -54,7 +54,7 @@ const THEME = { canvas: "#F0F1F8", ink: "#001688", paper: "#FFFFFF", muted: "#4D
                 onAccent: "#001688", accentOnInk: "#C9A063", mutedOnInk: "#B8BBCB", line: "#CCD0E7", font: "Poppins" };
 ```
 
-Brand rules still apply inside the motion piece. For ZUS: never put the logo on ZUS Blue (use a white plate), Gold is an accent and not text on white, and use the brand voice for labels ("Order now", not "Get started").
+Brand rules still apply inside the motion piece. For ZUS: full-colour logo on light backgrounds, the white version (`zus-*-white`) on ZUS Blue or other dark solids, never a CSS-filtered logo; Gold is an accent and not text on white, and use the brand voice for labels ("Order now", not "Get started").
 
 ## Brand content (not only colors)
 

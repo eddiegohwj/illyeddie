@@ -21,5 +21,6 @@ cd skills && zip -r zus-brandguide.zip zus-brandguide && zip -r motion-design.zi
 
 ## Open items
 
-- ZUS: no reversed (white) logo file is bundled.
+- ZUS: the horizontal lockup is rebuilt from the official shapes (measured spacing). Replace it with the vector from the brand guideline PDF when available.
+- ZUS: the one-line "ZUS COFFEE®" wordmark is not bundled.
 - ZUS: the CMYK values were recorded for the old `#16277A` blue.
