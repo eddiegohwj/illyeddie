@@ -1,6 +1,6 @@
 ---
 name: tiktok-brandguide
-description: Apply TikTok Shop's brand identity to any visual artifact or written output. Use this skill whenever the user asks to create, design, style, or produce anything with TikTok or TikTok Shop branding, including HTML reports, decks, 1-pagers, internal tools, email templates, social copy, UI components, or any creative output that should look and sound like TikTok Shop. Also trigger when the user mentions "TikTok brand", "TikTok Shop", "TikTok colors", "TikTok style", "make it look TikTok", or asks for on-brand design, typography, color usage, logo rules, or brand voice for TikTok or TikTok Shop. Always read references/brand-tokens.md before producing any visual output.
+description: Apply TikTok Shop's brand identity to any visual artifact or written output. Use this skill whenever the user asks to create, design, style, or produce anything with TikTok or TikTok Shop branding, including HTML reports, decks, 1-pagers, internal tools, email templates, social copy, UI components, or any creative output that should look and sound like TikTok Shop. Also trigger when the user mentions "TikTok brand", "TikTok Shop", "TikTok colors", "TikTok style", "make it look TikTok", or asks for on-brand design, typography, color usage, logo rules, or brand voice for TikTok or TikTok Shop. Do NOT trigger on generic "brand guide" or "on-brand" requests unless TikTok is named or already the active brand in this conversation. Always read references/brand-tokens.md before producing any visual output.
 ---
 
 # TikTok Shop Brand Guide Skill
@@ -52,10 +52,14 @@ TikTok's identity is the chromatic-aberration glitch: Red and Cyan offset on a B
 - High contrast, bold weights, generous size jumps. TikTok is loud and confident, not subtle.
 - Mobile-first thinking: large touch targets, punchy short lines, vertical rhythm.
 
-## When this differs from the editorial / ZUS look
+## When this differs from other brand skills
 
-This skill produces a LOUD, high-contrast, Gen-Z commerce aesthetic. It is the opposite of the restrained editorial system (cream, oxblood, serif). Do not blend the two unless the user explicitly asks for a hybrid. If the user wants TikTok-on-brand, commit to bold black, Shop Red, and TikTok Sans.
+This skill produces a LOUD, high-contrast, Gen-Z commerce aesthetic. It is not the ZUS Coffee look (`zus-brandguide`: ZUS Blue `#001688`, Luxury Gold, Poppins) and not the Anthropic look (`brand-guidelines`: cream, orange, Poppins + Lora). Do not blend TikTok with another brand unless the user explicitly asks for a hybrid. If the user wants TikTok-on-brand, commit to bold black, Shop Red, and TikTok Sans.
+
+## Contrast guardrail
+
+White on Shop Red is only 3.7:1. Use it for large or bold text only. For small text on a red button, use Black (5.7:1). Never put Cyan text on White (1.4:1). The full table is in `references/brand-tokens.md`.
 
 ## Reference files
 
-- `references/brand-tokens.md`: Full token set. Hex, RGB, CMYK, Pantone, the glitch effect spec, type scale, logo do/don't, voice by category, and ready-to-use CSS variables.
+- `references/brand-tokens.md`: Full token set with a confidence tag on each value. Hex, RGB, tints, contrast rules, the glitch effect spec, type scale, logo do/don't, voice by category, and ready-to-use CSS variables. CMYK and Pantone are NOT verified: do not use this file for print without the official guide.

@@ -1,6 +1,6 @@
 ---
 name: brand-guidelines
-description: Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit from having Anthropic's look-and-feel. Use it when brand colors or style guidelines, visual formatting, or company design standards apply.
+description: Applies Anthropic's official brand colors and typography to an artifact. Use it ONLY when the user names Anthropic or Claude branding (for example "Anthropic brand", "Anthropic colors", "make it look like Anthropic"). Do NOT trigger on generic requests for brand colors, style guidelines, "on-brand", company design standards or the Poppins font; those belong to the brand the user names (zus-brandguide for ZUS Coffee, tiktok-brandguide for TikTok Shop). If no brand is named, ask which brand.
 license: Complete terms in LICENSE.txt
 ---
 

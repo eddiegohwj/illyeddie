@@ -23,17 +23,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- UI FONTS (VARIABLE): load the active brand's fonts here -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* Anthropic Brand Colors */
         :root {
-            --anthropic-dark: #141413;
-            --anthropic-light: #faf9f5;
-            --anthropic-mid-gray: #b0aea5;
-            --anthropic-light-gray: #e8e6dc;
-            --anthropic-orange: #d97757;
-            --anthropic-blue: #6a9bcc;
-            --anthropic-green: #788c5d;
+            /* UI BRAND TOKENS (VARIABLE): replace these values with the active brand's tokens.
+               Default = Anthropic. Change only values, never names. */
+            --ui-text: #141413;
+            --ui-bg: #faf9f5;
+            --ui-bg-end: #f5f3ee;
+            --ui-muted: #b0aea5;
+            --ui-border: #e8e6dc;
+            --ui-accent: #d97757;
+            --ui-accent-hover: #c86641;
+            --ui-accent-2: #6a9bcc;
+            --ui-accent-2-hover: #5a8bb8;
+            --ui-accent-3: #788c5d;
+            --ui-accent-3-hover: #6b7b52;
+            --font-ui: 'Poppins', sans-serif;
+            --font-heading: 'Lora', serif;
         }
 
         * {
@@ -43,10 +52,10 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
+            font-family: var(--font-ui);
+            background: linear-gradient(135deg, var(--ui-bg) 0%, var(--ui-bg-end) 100%);
             min-height: 100vh;
-            color: var(--anthropic-dark);
+            color: var(--ui-text);
         }
 
         .container {
@@ -70,15 +79,15 @@
         }
 
         .sidebar h1 {
-            font-family: 'Lora', serif;
+            font-family: var(--font-heading);
             font-size: 24px;
             font-weight: 500;
-            color: var(--anthropic-dark);
+            color: var(--ui-text);
             margin-bottom: 8px;
         }
 
         .sidebar .subtitle {
-            color: var(--anthropic-mid-gray);
+            color: var(--ui-muted);
             font-size: 14px;
             margin-bottom: 32px;
             line-height: 1.4;
@@ -92,7 +101,7 @@
         .control-section h3 {
             font-size: 16px;
             font-weight: 600;
-            color: var(--anthropic-dark);
+            color: var(--ui-text);
             margin-bottom: 16px;
             display: flex;
             align-items: center;
@@ -101,26 +110,26 @@
 
         .control-section h3::before {
             content: '•';
-            color: var(--anthropic-orange);
+            color: var(--ui-accent);
             font-weight: bold;
         }
 
         /* Seed Controls */
         .seed-input {
             width: 100%;
-            background: var(--anthropic-light);
+            background: var(--ui-bg);
             padding: 12px;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             margin-bottom: 12px;
-            border: 1px solid var(--anthropic-light-gray);
+            border: 1px solid var(--ui-border);
             text-align: center;
         }
 
         .seed-input:focus {
             outline: none;
-            border-color: var(--anthropic-orange);
+            border-color: var(--ui-accent);
             box-shadow: 0 0 0 2px rgba(217, 119, 87, 0.1);
             background: white;
         }
@@ -145,7 +154,7 @@
             display: block;
             font-size: 14px;
             font-weight: 500;
-            color: var(--anthropic-dark);
+            color: var(--ui-text);
             margin-bottom: 8px;
         }
 
@@ -158,7 +167,7 @@
         .slider-container input[type="range"] {
             flex: 1;
             height: 4px;
-            background: var(--anthropic-light-gray);
+            background: var(--ui-border);
             border-radius: 2px;
             outline: none;
             -webkit-appearance: none;
@@ -168,7 +177,7 @@
             -webkit-appearance: none;
             width: 16px;
             height: 16px;
-            background: var(--anthropic-orange);
+            background: var(--ui-accent);
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -176,13 +185,13 @@
 
         .slider-container input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.1);
-            background: #c86641;
+            background: var(--ui-accent-hover);
         }
 
         .slider-container input[type="range"]::-moz-range-thumb {
             width: 16px;
             height: 16px;
-            background: var(--anthropic-orange);
+            background: var(--ui-accent);
             border-radius: 50%;
             border: none;
             cursor: pointer;
@@ -192,7 +201,7 @@
         .value-display {
             font-family: 'Courier New', monospace;
             font-size: 12px;
-            color: var(--anthropic-mid-gray);
+            color: var(--ui-muted);
             min-width: 60px;
             text-align: right;
         }
@@ -205,7 +214,7 @@
         .color-group label {
             display: block;
             font-size: 12px;
-            color: var(--anthropic-mid-gray);
+            color: var(--ui-muted);
             margin-bottom: 4px;
         }
 
@@ -228,12 +237,12 @@
         .color-value {
             font-family: 'Courier New', monospace;
             font-size: 12px;
-            color: var(--anthropic-mid-gray);
+            color: var(--ui-muted);
         }
 
         /* Buttons */
         .button {
-            background: var(--anthropic-orange);
+            background: var(--ui-accent);
             color: white;
             border: none;
             padding: 10px 16px;
@@ -246,7 +255,7 @@
         }
 
         .button:hover {
-            background: #c86641;
+            background: var(--ui-accent-hover);
             transform: translateY(-1px);
         }
 
@@ -255,19 +264,19 @@
         }
 
         .button.secondary {
-            background: var(--anthropic-blue);
+            background: var(--ui-accent-2);
         }
 
         .button.secondary:hover {
-            background: #5a8bb8;
+            background: var(--ui-accent-2-hover);
         }
 
         .button.tertiary {
-            background: var(--anthropic-green);
+            background: var(--ui-accent-3);
         }
 
         .button.tertiary:hover {
-            background: #6b7b52;
+            background: var(--ui-accent-3-hover);
         }
 
         .button-row {
@@ -309,7 +318,7 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
-            color: var(--anthropic-mid-gray);
+            color: var(--ui-muted);
         }
 
         /* Responsive - Stack on mobile */
@@ -596,4 +605,4 @@
         });
     </script>
 </body>
-</html>
+</html>

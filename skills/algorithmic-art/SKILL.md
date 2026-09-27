@@ -107,20 +107,20 @@ With the philosophy AND conceptual framework established, express it through cod
 **CRITICAL: BEFORE writing any HTML:**
 
 1. **Read** `templates/viewer.html` using the Read tool
-2. **Study** the exact structure, styling, and Anthropic branding
+2. **Study** the exact structure, styling, and the `--ui-*` brand tokens in `:root`
 3. **Use that file as the LITERAL STARTING POINT** - not just inspiration
-4. **Keep all FIXED sections exactly as shown** (header, sidebar structure, Anthropic colors/fonts, seed controls, action buttons)
+4. **Keep all FIXED sections exactly as shown** (header, sidebar structure, seed controls, action buttons)
 5. **Replace only the VARIABLE sections** marked in the file's comments (algorithm, parameters, UI controls for parameters)
 
 **Avoid:**
 - ❌ Creating HTML from scratch
-- ❌ Inventing custom styling or color schemes
-- ❌ Using system fonts or dark themes
+- ❌ Inventing custom styling or color schemes that no brand skill defines
+- ❌ Renaming or removing the `--ui-*` tokens
 - ❌ Changing the sidebar structure
 
 **Follow these practices:**
 - ✅ Copy the template's exact HTML structure
-- ✅ Keep Anthropic branding (Poppins/Lora fonts, light colors, gradient backdrop)
+- ✅ Apply the UI brand (see **UI BRAND SELECTION** below) by changing only the `--ui-*` / `--font-*` values and the font `<link>`
 - ✅ Maintain the sidebar layout (Seed → Parameters → Colors? → Actions)
 - ✅ Replace only the p5.js algorithm and parameter controls
 
@@ -218,6 +218,33 @@ The HTML artifact contains everything: p5.js (from CDN), the algorithm, paramete
 
 ---
 
+### UI BRAND SELECTION
+
+The viewer UI (header, sidebar, buttons) takes its look from ONE brand. Pick it with this order:
+
+1. The user names a brand, or a brand skill is active in this conversation (for example `zus-brandguide`, `tiktok-brandguide`, `brand-guidelines`): read that skill's tokens and use them.
+2. No brand is named: keep the template defaults (Anthropic values).
+
+To apply a brand, change only these values in `:root` and the font `<link>`:
+
+| Token | Meaning |
+|---|---|
+| `--ui-text` | Primary text |
+| `--ui-bg`, `--ui-bg-end` | Page background gradient (start, end) |
+| `--ui-muted` | Secondary text, labels |
+| `--ui-border` | Borders, slider tracks |
+| `--ui-accent`, `--ui-accent-hover` | Primary buttons, focus, highlights |
+| `--ui-accent-2`, `--ui-accent-2-hover` | Secondary buttons |
+| `--ui-accent-3`, `--ui-accent-3-hover` | Tertiary buttons |
+| `--font-ui`, `--font-heading` | Body and heading fonts |
+
+Rules:
+- Use only colors and fonts from the brand skill. If a token has no direct brand match, use the closest brand tint and say so.
+- Check contrast of `--ui-text` on `--ui-bg`, and of button text on `--ui-accent`, before you publish.
+- The brand controls the UI only. The ART palette stays free, but you can seed the default color pickers from the brand accents.
+
+---
+
 ## INTERACTIVE ARTIFACT CREATION
 
 **REMINDER: `templates/viewer.html` should have already been read (see STEP 0). Use that file as the starting point.**
@@ -230,7 +257,6 @@ The `templates/viewer.html` file is the foundation. It contains the exact struct
 
 **FIXED (always include exactly as shown):**
 - Layout structure (header, sidebar, main canvas area)
-- Anthropic branding (UI colors, fonts, gradients)
 - Seed section in sidebar:
   - Seed display
   - Previous/Next buttons
@@ -333,7 +359,7 @@ Add as many control-group divs as there are parameters.
 - Seed controls must work (prev/next/random/jump/display)
 - All parameters must have UI controls
 - Regenerate, Reset, Download buttons must work
-- Keep Anthropic branding (UI styling, not art colors)
+- UI uses the selected brand's tokens (UI styling, not art colors)
 
 ### USING THE ARTIFACT
 
@@ -369,7 +395,7 @@ Each request is unique. The process involves:
 5. **Build matching UI controls** - Sliders/inputs for those parameters
 
 **The constants**:
-- Anthropic branding (colors, fonts, layout)
+- UI layout, with colors and fonts from the selected brand (see UI BRAND SELECTION)
 - Seed navigation (always present)
 - Self-contained HTML artifact
 
@@ -388,8 +414,8 @@ To achieve the best results, trust creativity and let the philosophy guide the i
 This skill includes helpful templates and documentation:
 
 - **templates/viewer.html**: REQUIRED STARTING POINT for all HTML artifacts.
-  - This is the foundation - contains the exact structure and Anthropic branding
-  - **Keep unchanged**: Layout structure, sidebar organization, Anthropic colors/fonts, seed controls, action buttons
+  - This is the foundation - contains the exact structure and the `--ui-*` brand tokens (default values: Anthropic)
+  - **Keep unchanged**: Layout structure, sidebar organization, token names, seed controls, action buttons
   - **Replace**: The p5.js algorithm, parameter definitions, and UI controls in Parameters section
   - The extensive comments in the file mark exactly what to keep vs replace
 
@@ -402,4 +428,4 @@ This skill includes helpful templates and documentation:
 - The **template is the STARTING POINT**, not inspiration
 - The **algorithm is where to create** something unique
 - Don't copy the flow field example - build what the philosophy demands
-- But DO keep the exact UI structure and Anthropic branding from the template
+- But DO keep the exact UI structure from the template, and apply the selected brand only through the `--ui-*` tokens
