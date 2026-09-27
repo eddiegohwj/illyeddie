@@ -1,0 +1,16 @@
+<div class="top">
+  <div><h1>One Shape</h1><p>motion-design engine × zus-brandguide tokens: same springs, same beats, one THEME slot</p></div>
+  <div class="seg" role="group" aria-label="Theme">
+    <button id="th-mono" aria-pressed="true">Mono</button><button id="th-zus" aria-pressed="false">ZUS</button>
+  </div>
+</div>
+<!--STAGE-->
+<div class="bar">
+  <div class="row">
+    <button class="btn" id="play" aria-label="Pause"><svg viewBox="0 0 16 16"><path id="playicon" fill="currentColor" d="M4 2h3v12H4zM9 2h3v12H9z"/></svg></button>
+    <div class="seg" role="group" aria-label="Speed"><button id="sp1" aria-pressed="true">1×</button><button id="sp4" aria-pressed="false">¼×</button></div>
+    <div class="readout" id="readout"></div>
+  </div>
+  <div id="tl" aria-label="Timeline"><div id="head"></div></div>
+  <div class="hint">Space: play/pause · ← →: step one beat · drag the timeline to scrub · M / Z: theme</div>
+</div>
