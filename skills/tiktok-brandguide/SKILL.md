@@ -51,6 +51,7 @@ TikTok's identity is the chromatic-aberration glitch: Red and Cyan offset on a B
 - Cyan is a secondary accent and the glitch partner to Red. Never the dominant color.
 - High contrast, bold weights, generous size jumps. TikTok is loud and confident, not subtle.
 - Mobile-first thinking: large touch targets, punchy short lines, vertical rhythm.
+- Light and dark mode: build with the `--brand-*` semantic tokens in `references/brand-tokens.md` (section "Semantic Tokens"). Dark (black) is the TikTok-native default. The glitch effect is dark mode only.
 
 ## When this differs from other brand skills
 

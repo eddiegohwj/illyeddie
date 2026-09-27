@@ -206,6 +206,72 @@
 
 ---
 
+## Semantic Tokens: Light and Dark Mode
+
+Every brand skill uses the same `--brand-*` keys (see the `brand-router` skill). Build components with these keys, not with raw hex values. Then light and dark mode work with no extra code.
+
+| Key | Light | Dark | Use |
+|---|---|---|---|
+| `--brand-bg` | `#FFFFFF` | `#000B44` | Page background. Dark = ZUS Blue with 50% black [Derived]. |
+| `--brand-surface` | `#F0F1F8` | `#001688` | Cards, panels. Light = ZUS Blue 6% on white. |
+| `--brand-text` | `#001688` | `#FFFFFF` | Body and headings. 14.3:1 / 18.6:1. |
+| `--brand-text-muted` | `#4D5CAC` | `#B8BBCB` | Secondary text. Blue 70% (6.1:1) / White 72% (9.7:1). |
+| `--brand-border` | `#CCD0E7` | `#293262` | Dividers. Blue 20% / White 16%. |
+| `--brand-accent` | `#001688` | `#C9A063` | Button and highlight fills. |
+| `--brand-on-accent` | `#FFFFFF` | `#001688` | Text on an accent fill. 14.3:1 / 5.9:1. |
+| `--brand-accent-text` | `#001688` | `#C9A063` | Accent as text on the background. 14.3:1 / 7.7:1. |
+| `--brand-accent-2` | `#C9A063` | `#5E6CB8` | Decoration only (icons, rules, chart marks). Never text: 2.4:1 / 3.8:1. |
+| `--font-display` | `'Poppins', 'Barlow Condensed', sans-serif` | (same) | Headlines. |
+| `--font-body` | `'Poppins', 'Barlow', sans-serif` | (same) | Body. |
+
+Rules:
+- **Gold text on white is 2.4:1. Never use it** for text in light mode. Gold is a text color only in dark mode.
+- **Logo in dark mode:** the bundled logos are for light backgrounds only (see SKILL.md guardrail). In dark mode, put the logo on a white plate (`#FFFFFF`, radius ≥ 8px, padding ≥ the clear-space rule). Never put it straight on `--brand-bg` or `--brand-surface`.
+- The tagline in dark mode: "a Necessity, not a" in White, "Luxury" in Luxury Gold.
+
+```css
+/* ZUS Coffee: semantic tokens. Light is the default. */
+:root {
+  --brand-bg: #FFFFFF;
+  --brand-surface: #F0F1F8;
+  --brand-text: #001688;
+  --brand-text-muted: #4D5CAC;
+  --brand-border: #CCD0E7;
+  --brand-accent: #001688;
+  --brand-on-accent: #FFFFFF;
+  --brand-accent-text: #001688;
+  --brand-accent-2: #C9A063;
+  --font-display: 'Poppins', 'Barlow Condensed', sans-serif;
+  --font-body: 'Poppins', 'Barlow', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand-bg: #000B44;
+    --brand-surface: #001688;
+    --brand-text: #FFFFFF;
+    --brand-text-muted: #B8BBCB;
+    --brand-border: #293262;
+    --brand-accent: #C9A063;
+    --brand-on-accent: #001688;
+    --brand-accent-text: #C9A063;
+    --brand-accent-2: #5E6CB8;
+  }
+}
+:root[data-theme="dark"] {
+  --brand-bg: #000B44;
+  --brand-surface: #001688;
+  --brand-text: #FFFFFF;
+  --brand-text-muted: #B8BBCB;
+  --brand-border: #293262;
+  --brand-accent: #C9A063;
+  --brand-on-accent: #001688;
+  --brand-accent-text: #C9A063;
+  --brand-accent-2: #5E6CB8;
+}
+```
+
+---
+
 ## CSS Variables (ready to paste)
 
 ```css

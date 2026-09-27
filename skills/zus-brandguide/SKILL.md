@@ -65,6 +65,8 @@ Applies ZUS Coffee's official brand identity (Part 02, 2025) to any visual or wr
 - ZUS Blue is the primary background for hero sections
 - Gold is an accent, not a background (except logo reversed on sand/gold)
 - Secondary palette (Sky, Sage, Yellow, Burnt, Brown, Black) for seasonal or contextual use only — not as primary UI colors
+- **Dark mode**: build with the `--brand-*` semantic tokens in `references/brand-tokens.md` (section "Semantic Tokens"). They have light and dark values, with checked contrast. Dark mode uses a deep ZUS Blue background (`#000B44`) and Gold as the accent. Gold text is allowed only in dark mode (2.4:1 on white).
+- **Logo in dark mode**: put the bundled logo on a white plate. Never put it straight on a dark background.
 
 ## Reference files
 

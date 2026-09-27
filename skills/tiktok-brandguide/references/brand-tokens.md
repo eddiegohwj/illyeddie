@@ -159,6 +159,72 @@ Rules: large size jumps, bold weights, sentence case. Uppercase only for short l
 
 ---
 
+## Semantic Tokens: Light and Dark Mode
+
+Every brand skill uses the same `--brand-*` keys (see the `brand-router` skill). Build components with these keys, not with raw hex values. Then light and dark mode work with no extra code.
+
+| Key | Light | Dark | Use |
+|---|---|---|---|
+| `--brand-bg` | `#FFFFFF` | `#000000` | Page background. Black is the TikTok-native look. |
+| `--brand-surface` | `#F5F5F5` | `#161823` | Cards, panels. Light = Black 4% on white [Derived]. |
+| `--brand-text` | `#000000` | `#FFFFFF` | Body and headings. 21:1. |
+| `--brand-text-muted` | `#666666` | `#B2B2B2` | Secondary text. Black 60% (5.7:1) / White 70% (9.9:1). |
+| `--brand-border` | `#E6E6E6` | `#242424` | Dividers. Black 10% / White 14%. |
+| `--brand-accent` | `#FE2C55` | `#FE2C55` | Shop Red. CTAs, price tags, key numbers (fills). |
+| `--brand-on-accent` | `#FFFFFF` | `#FFFFFF` | Text on red. 3.7:1, so button labels must be ≥ 19px bold. For smaller labels use `#000000` (5.7:1). |
+| `--brand-accent-text` | `#CB2344` | `#FE2C55` | Red as text on the background. Light = Shop Red with 20% black [Derived], 5.4:1. Dark = 5.7:1. |
+| `--brand-accent-2` | `#25F4EE` | `#25F4EE` | Cyan. Decoration only in light mode (1.4:1 on white). Text allowed in dark mode (15.3:1). |
+| `--font-display` | `'TikTok Sans', 'Proxima Nova', system-ui, sans-serif` | (same) | Headlines. |
+| `--font-body` | `'TikTok Sans', 'Proxima Nova', system-ui, sans-serif` | (same) | Body. |
+
+Rules:
+- Dark is the default TikTok-native look. Use light mode for clean reports and seller documents.
+- The glitch effect works only in dark mode (it needs a black base). In light mode, do not use it.
+- `#CB2344` is a derived shade for small red text on white. It is not an official TikTok color. Use `#FE2C55` for all fills.
+
+```css
+/* TikTok Shop: semantic tokens. Light is the default. */
+:root {
+  --brand-bg: #FFFFFF;
+  --brand-surface: #F5F5F5;
+  --brand-text: #000000;
+  --brand-text-muted: #666666;
+  --brand-border: #E6E6E6;
+  --brand-accent: #FE2C55;
+  --brand-on-accent: #FFFFFF;
+  --brand-accent-text: #CB2344;
+  --brand-accent-2: #25F4EE;
+  --font-display: 'TikTok Sans', 'Proxima Nova', system-ui, sans-serif;
+  --font-body: 'TikTok Sans', 'Proxima Nova', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand-bg: #000000;
+    --brand-surface: #161823;
+    --brand-text: #FFFFFF;
+    --brand-text-muted: #B2B2B2;
+    --brand-border: #242424;
+    --brand-accent: #FE2C55;
+    --brand-on-accent: #FFFFFF;
+    --brand-accent-text: #FE2C55;
+    --brand-accent-2: #25F4EE;
+  }
+}
+:root[data-theme="dark"] {
+  --brand-bg: #000000;
+  --brand-surface: #161823;
+  --brand-text: #FFFFFF;
+  --brand-text-muted: #B2B2B2;
+  --brand-border: #242424;
+  --brand-accent: #FE2C55;
+  --brand-on-accent: #FFFFFF;
+  --brand-accent-text: #FE2C55;
+  --brand-accent-2: #25F4EE;
+}
+```
+
+---
+
 ## CSS Variables (ready to paste)
 
 ```css

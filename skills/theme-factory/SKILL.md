@@ -1,6 +1,6 @@
 ---
 name: theme-factory
-description: Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply to any artifact that has been creating, or can generate a new theme on-the-fly.
+description: Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors/fonts that you can apply to any artifact that has been creating, or can generate a new theme on-the-fly. Use ONLY when no brand applies. Do NOT use when the user names a brand (ZUS Coffee, TikTok Shop, Anthropic) or a brand skill is already active in the conversation; the brand skill wins.
 license: Complete terms in LICENSE.txt
 ---
 
@@ -8,6 +8,18 @@ license: Complete terms in LICENSE.txt
 # Theme Factory Skill
 
 This skill provides a curated collection of professional font and color themes themes, each with carefully selected color palettes and font pairings. Once a theme is chosen, it can be applied to any artifact.
+
+## Brand Priority (check this first)
+
+Brand skills win over themes. Before you show the showcase, check:
+
+1. Does the user name a brand (ZUS Coffee, TikTok Shop, Anthropic), or is a brand skill already active in this conversation?
+   - **Yes**: do NOT use this skill. Do not show the showcase and do not ask for a theme. Use the brand skill (`zus-brandguide`, `tiktok-brandguide`, `brand-guidelines`).
+2. Does the user ask for a theme on top of a brand (for example "ZUS but in Ocean Depths")?
+   - Ask one question to confirm the hybrid. Then keep the brand's logo, fonts and voice, and use the theme only for secondary colors.
+3. No brand at all: continue with this skill.
+
+When you apply a theme to an HTML artifact, map it to the same `--brand-*` semantic keys that the brand skills use (see `brand-router`), and give dark-mode values too.
 
 ## Purpose
 

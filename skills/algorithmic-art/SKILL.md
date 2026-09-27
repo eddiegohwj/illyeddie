@@ -227,16 +227,18 @@ The viewer UI (header, sidebar, buttons) takes its look from ONE brand. Pick it 
 
 To apply a brand, change only these values in `:root` and the font `<link>`:
 
-| Token | Meaning |
-|---|---|
-| `--ui-text` | Primary text |
-| `--ui-bg`, `--ui-bg-end` | Page background gradient (start, end) |
-| `--ui-muted` | Secondary text, labels |
-| `--ui-border` | Borders, slider tracks |
-| `--ui-accent`, `--ui-accent-hover` | Primary buttons, focus, highlights |
-| `--ui-accent-2`, `--ui-accent-2-hover` | Secondary buttons |
-| `--ui-accent-3`, `--ui-accent-3-hover` | Tertiary buttons |
-| `--font-ui`, `--font-heading` | Body and heading fonts |
+| Token | Meaning | Take the value from (brand skill key) |
+|---|---|---|
+| `--ui-text` | Primary text | `--brand-text` |
+| `--ui-bg`, `--ui-bg-end` | Page background gradient (start, end) | `--brand-bg`, `--brand-surface` |
+| `--ui-muted` | Secondary text, labels | `--brand-text-muted` |
+| `--ui-border` | Borders, slider tracks | `--brand-border` |
+| `--ui-accent`, `--ui-accent-hover` | Primary buttons, focus, highlights | `--brand-accent` (hover: same color with 10% black) |
+| `--ui-accent-2`, `--ui-accent-2-hover` | Secondary buttons | `--brand-accent-2` (hover: 10% black) |
+| `--ui-accent-3`, `--ui-accent-3-hover` | Tertiary buttons | `--brand-text-muted` (hover: 10% black) |
+| `--font-ui`, `--font-heading` | Body and heading fonts | `--font-body`, `--font-display` |
+
+Use the light values of the brand. Button labels are white in the template: if the brand's `--brand-on-accent` is not white, change the button text color to match.
 
 Rules:
 - Use only colors and fonts from the brand skill. If a token has no direct brand match, use the closest brand tint and say so.

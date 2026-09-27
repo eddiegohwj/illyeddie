@@ -35,6 +35,60 @@ To access Anthropic's official brand identity and style resources, use this skil
 - **Body Text**: Lora (with Georgia fallback)
 - **Note**: Fonts should be pre-installed in your environment for best results
 
+### Semantic Tokens: Light and Dark Mode
+
+Every brand skill uses the same `--brand-*` keys (see the `brand-router` skill). For HTML artifacts, build with these keys, not raw hex.
+
+| Key | Light | Dark | Use |
+|---|---|---|---|
+| `--brand-bg` | `#faf9f5` | `#141413` | Page background |
+| `--brand-surface` | `#e8e6dc` | `#222221` | Cards, panels. Dark = Light 6% on Dark [Derived] |
+| `--brand-text` | `#141413` | `#faf9f5` | Body and headings. 17.5:1 |
+| `--brand-text-muted` | `#646462` | `#b0aea5` | Secondary text. Light = Dark 65% [Derived], 5.6:1. Dark = 8.3:1 |
+| `--brand-border` | `#b0aea5` | `#343433` | Dividers |
+| `--brand-accent` | `#d97757` | `#d97757` | Button and highlight fills |
+| `--brand-on-accent` | `#141413` | `#141413` | Text on orange. 5.9:1. White on orange is only 3.1:1 |
+| `--brand-accent-text` | `#a35941` | `#d97757` | Orange as text. Light = Orange with 25% black [Derived], 4.9:1 |
+| `--brand-accent-2` | `#6a9bcc` | `#6a9bcc` | Secondary accent. Decoration and large text only |
+| `--font-display` | `'Poppins', Arial, sans-serif` | (same) | Headings |
+| `--font-body` | `'Lora', Georgia, serif` | (same) | Body |
+
+Mid Gray `#b0aea5` on the light background is only 2.1:1. Do not use it for text in light mode.
+
+```css
+:root {
+  --brand-bg: #faf9f5;
+  --brand-surface: #e8e6dc;
+  --brand-text: #141413;
+  --brand-text-muted: #646462;
+  --brand-border: #b0aea5;
+  --brand-accent: #d97757;
+  --brand-on-accent: #141413;
+  --brand-accent-text: #a35941;
+  --brand-accent-2: #6a9bcc;
+  --font-display: 'Poppins', Arial, sans-serif;
+  --font-body: 'Lora', Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --brand-bg: #141413;
+    --brand-surface: #222221;
+    --brand-text: #faf9f5;
+    --brand-text-muted: #b0aea5;
+    --brand-border: #343433;
+    --brand-accent-text: #d97757;
+  }
+}
+:root[data-theme="dark"] {
+  --brand-bg: #141413;
+  --brand-surface: #222221;
+  --brand-text: #faf9f5;
+  --brand-text-muted: #b0aea5;
+  --brand-border: #343433;
+  --brand-accent-text: #d97757;
+}
+```
+
 ## Features
 
 ### Smart Font Application
