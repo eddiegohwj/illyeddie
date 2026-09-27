@@ -208,7 +208,7 @@
 
 ## Semantic Tokens: Light and Dark Mode
 
-Every brand skill uses the same `--brand-*` keys (see the `brand-router` skill). Build components with these keys, not with raw hex values. Then light and dark mode work with no extra code.
+These `--brand-*` keys are semantic: each key names a job, not a color. Build components with these keys, not with raw hex values. Then light and dark mode work with no extra code.
 
 | Key | Light | Dark | Use |
 |---|---|---|---|
