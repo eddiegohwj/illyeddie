@@ -83,6 +83,7 @@ Accents are used **sparingly**. Full values, tints (90% to 10%) and the measured
 - Accent colours (Sky Blue, Fresh Green, Sunny Yellow, Vibrant Orange, Classic Coffee Brown, Elegant Black) are used sparingly, as fills, never as primary UI colours. Use the measured text pairs in `references/brand-tokens.md`.
 - **Light and dark mode**: build with the `--brand-*` semantic tokens in `references/brand-tokens.md` (section "Semantic Tokens"). Gray does the work and ZUS Blue is the accent: body text is neutral ink, dark mode is neutral graphite (`#1C1C1E`), never navy. Separate neighbours by lightness, not only by hue.
 - **Apps, dashboards and portals**: also follow "App UI rules" in `references/brand-tokens.md` (no gold in app UI, Poppins for titles only, a UI face for tables, quiet row actions, a contrast audit).
+- **Charts**: use the validated `--viz-*` palette in `references/brand-tokens.md` ("Data-viz tokens"). Fixed order blue, orange, sky, green; bad-meaning series use `--viz-critical`. For a full dashboard page, use the `dashboard-kit` skill.
 - **Logo in dark mode**: put the full-color logo on a white plate. Never put it straight on a dark background, and never make a white logo with a CSS filter.
 
 ## Reference files
