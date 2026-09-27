@@ -19,14 +19,14 @@
 - **Hex**: `#FFFFFF`
 - **RGB**: 255 / 255 / 255
 - **CMYK**: 0 / 0 / 0 / 0
-- **Use**: Backgrounds, reversed type on ZUS Blue, reversed logo
+- **Use**: Backgrounds, reversed type on ZUS Blue, the logotype in the inverted logo configurations
 
 ### Luxury Gold (Supporting)
 - **Hex**: `#C9A063`
 - **RGB**: 201 / 160 / 99
 - **CMYK**: 25 / 40 / 65 / 0
 - **Pantone**: 465 C
-- **Use**: Accent colour, "Luxury" in signature tagline, reversed logo on dark backgrounds, highlights
+- **Use**: Accent colour, "Luxury" in signature tagline, highlights. Not a logo colour (Part 02 lists no gold logo configuration).
 
 ---
 
@@ -63,19 +63,59 @@
 
 ---
 
-## Secondary / Seasonal Palette
-*(From kit-of-parts swatch row — hex values are visually matched from brand guide; exact specs not shown in screenshots. Confirm with Brand team if printing.)*
+## Accent Colours (official, Part 02)
 
-| Name | Approx Hex | Notes |
-|---|---|---|
-| Sky Blue | `#7EB5CE` | Seasonal/contextual only |
-| Sage Green | `#7BAA72` | Seasonal/contextual only |
-| Yellow | `#F0D060` | Seasonal/contextual only |
-| Burnt Orange | `#C86030` | Seasonal/contextual only |
-| Dark Brown | `#4A2810` | Dark bg alternative to ZUS Blue |
-| Near Black | `#0A0A0A` | Deep dark, use sparingly |
+*Source: ZUS Brand Identity Part 02, "Accent Colours" page (2025). Replaces the earlier "Secondary / Seasonal" values, which were guessed from screenshots and were wrong for all 6 colours (for example "Yellow #F0D060" is really Sunny Yellow #FFE200).*
 
-> ⚠ Secondary hex values are approximated from visual inspection. Request exact values from Brand team for print production.
+The guide: accent colours "have higher brightness and saturation to capture attention, and they are used **sparingly** to stand out within the overall colour scheme."
+
+| Name | Hex | RGB | CMYK | Pantone |
+|---|---|---|---|---|
+| Sky Blue | `#17BBEF` | 23/187/239 | 68/0/0/0 | 298 C |
+| Fresh Green | `#48B249` | 72/178/73 | 69/0/90/0 | 2270 C |
+| Sunny Yellow | `#FFE200` | 255/226/0 | 0/10/90/0 | 107 C |
+| Vibrant Orange | `#EA5703` | 234/87/3 | 0/79/100/0 | 1655 C |
+| Classic Coffee Brown | `#522413` | 82/36/19 | 58/85/96/50 | 483 C |
+| Elegant Black | `#000000` | 0/0/0 | 0/0/0/100 | Black C |
+
+### Tints (mixed with white, as on the guide page)
+
+| Name | 90% | 80% | 70% | 60% | 50% | 40% | 30% | 20% | 10% |
+|---|---|---|---|---|---|---|---|---|---|
+| Sky Blue | `#2EC2F1` | `#45C9F2` | `#5DCFF4` | `#74D6F5` | `#8BDDF7` | `#A2E4F9` | `#B9EBFA` | `#D1F1FC` | `#E8F8FD` |
+| Fresh Green | `#5ABA5B` | `#6DC16D` | `#7FC980` | `#91D192` | `#A4D8A4` | `#B6E0B6` | `#C8E8C8` | `#DAF0DB` | `#EDF7ED` |
+| Sunny Yellow | `#FFE519` | `#FFE833` | `#FFEB4D` | `#FFEE66` | `#FFF080` | `#FFF399` | `#FFF6B2` | `#FFF9CC` | `#FFFCE6` |
+| Vibrant Orange | `#EC681C` | `#EE7935` | `#F0894F` | `#F29A68` | `#F4AB81` | `#F7BC9A` | `#F9CDB3` | `#FBDDCD` | `#FDEEE6` |
+| Classic Coffee Brown | `#633A2B` | `#755042` | `#86665A` | `#977C71` | `#A89289` | `#BAA7A1` | `#CBBDB8` | `#DCD3D0` | `#EEE9E7` |
+| Elegant Black | `#191919` | `#333333` | `#4D4D4D` | `#666666` | `#808080` | `#999999` | `#B2B2B2` | `#CCCCCC` | `#E6E6E6` |
+
+### Readable pairs (measured, WCAG 2.x)
+
+| Accent | As text on white | Best text ON the accent | ZUS Blue on it | On graphite `#1C1C1E` |
+|---|---|---|---|---|
+| Sky Blue | 2.2:1 ✗ never | Black 9.4:1 | 6.4:1 ✓ | 7.6:1 |
+| Fresh Green | 2.7:1 ✗ never | Black 7.7:1 | 5.3:1 ✓ | 6.3:1 |
+| Sunny Yellow | 1.3:1 ✗ never | Black 16.1:1 | 11.0:1 ✓ | 13.1:1 |
+| Vibrant Orange | 3.6:1 large text only | Black 5.9:1 | 4.0:1 large text only | 4.8:1 |
+| Classic Coffee Brown | 13.0:1 ✓ | White 13.0:1 | 1.1:1 ✗ never | 1.3:1 |
+| Elegant Black | 21.0:1 ✓ | White 21.0:1 | 1.5:1 ✗ never | 1.2:1 |
+
+
+### Accent rules
+
+- **Accents are fills and illustration colours, not text colours.** Only Classic Coffee Brown and Elegant Black may be text on white. For text on an accent fill, use the "Best text ON the accent" column.
+- **Never put ZUS Blue next to Coffee Brown or Black as text/background** (1.1:1 and 1.5:1).
+- Vibrant Orange with ZUS Blue or white text: large text only (4.0:1 / 3.6:1). Use black text on orange for small text.
+- Use tints for backgrounds and fills. Do not invent new hues.
+
+### Sunny Yellow + ZUS Blue (web)
+
+- **Readable:** ZUS Blue on Sunny Yellow and Sunny Yellow on ZUS Blue are both 11.0:1.
+- **Where:** marketing and campaign sites only (hero sections, promo banners, a yellow call-to-action on a ZUS Blue field). **Not in app UI** (dashboards, portals, internal tools); apps follow "App UI rules" below.
+- **How much:** yellow covers 10% of the area or less. Yellow and blue are both fully saturated opposite colours: in large equal areas their shared edge vibrates and tires the eye.
+- **Text:** on a yellow fill, use ZUS Blue (11.0:1) or black (16.1:1). **Never white on yellow (1.3:1), never yellow text on white (1.3:1).**
+- **Meaning:** Sunny Yellow never means "warning". Warnings stay amber (`#B54708` on `#FFFAEB`), so users never confuse a promo with an alert.
+- **Never with Luxury Gold** on the same screen or piece. Both are warm accents and compete. Pick one.
 
 ---
 
@@ -130,19 +170,25 @@
 3. **Symbol only** — Kaldi circle mark alone
 4. **Wordmark only** — "ZUS®" + "COFFEE" or "ZUS COFFEE®" text only
 
-### Colour application rules
+### Configurations (official, Part 02 "Configurations")
 
-| Background | Logo version to use |
-|---|---|
-| White / light | Full colour (ZUS Blue mark + wordmark) |
-| ZUS Blue | White reversed version |
-| Luxury Gold / Sand | Full colour version (use entire logo as is) |
-| Dark brown / Dark solid | White reversed version |
-| Photography / richly coloured | White reversed version |
+The logo must be used in full colour. The guide allows exactly 4 configurations:
+
+| Configuration | Background | Files (`assets/logo/`) |
+|---|---|---|
+| Full colour | White or light | `zus-vertical-lockup-full-color-light-bg.*`, `zus-logomark-full-color-light-bg.*` |
+| Black colour | White or light, **only when full colour is technically impossible** | `zus-vertical-lockup-black-on-white.*`, `zus-logomark-black-on-white.*` |
+| Inverted white | **Solid ZUS Blue `#001688` only.** ONLY the logotype (ZUS, COFFEE, ®) is white; the mark keeps ZUS Blue, so its circle merges into the background. | `zus-vertical-lockup-inverted-white-on-zus-blue.*`, `zus-logomark-inverted-white-on-zus-blue.*` |
+| Inverted black | **Solid black `#000000` only.** The logotype is white; the mark is black, so its circle merges into the background. | `zus-vertical-lockup-inverted-black-on-black.*`, `zus-logomark-inverted-black-on-black.*` |
+
+- The black and inverted files were made from the official full-colour vectors by **changing fills only**. The geometry is the brand team's. Black is `#000000` (Elegant Black, Pantone Black C); the guide's own render shows `#1D1D1B`, which is Illustrator's default rich black.
+- Any other background (photography, graphite dark mode, brown, gold, a tint): **put the full-colour logo on a white plate**, or ask the brand team. Do not pick a configuration the guide does not list.
+- **Never** make a white or black logo with a CSS filter (`invert()`, `brightness(0)`): the face is white shapes on a blue circle, so a filter inverts the face.
+- Still not bundled: the **horizontal lockup** (mark left of the wordmark) and **wordmark only**. Do not rebuild them from the vertical file; the spacing is not known. Ask for the brand PDF or AI file.
 
 ### Do
 - Use full colour on light/neutral backgrounds
-- Use white version on dark or richly coloured backgrounds
+- Use the inverted versions only on their solid background (ZUS Blue or black)
 - Maintain clear space = mark width on all sides
 - Follow minimum size rules
 - Use only approved background colours
@@ -152,7 +198,8 @@
 - Place on low-contrast or unapproved backgrounds
 - Stretch, rotate, or modify proportions
 - Modify in shape, colour, or orientation
-- Use reversed logo on light or low-contrast backgrounds
+- Use an inverted version on light, gradient, photographic or any non-solid background
+- Make a white or black version with a CSS filter
 
 ---
 
@@ -320,13 +367,13 @@ The brand guide describes marketing pieces. For apps people use all day, apply t
   --zus-gold-20:  rgba(201,160,99,0.20);
   --zus-gold-10:  rgba(201,160,99,0.10);
 
-  /* Secondary (seasonal, approx) */
-  --sec-sky:      #7EB5CE;
-  --sec-sage:     #7BAA72;
-  --sec-yellow:   #F0D060;
-  --sec-burnt:    #C86030;
-  --sec-brown:    #4A2810;
-  --sec-black:    #0A0A0A;
+  /* Accent colours (official, Part 02) */
+  --accent-sky:    #17BBEF;
+  --accent-green:  #48B249;
+  --accent-yellow: #FFE200;
+  --accent-orange: #EA5703;
+  --accent-brown:  #522413;
+  --accent-black:  #000000;
 
   /* Icon contrast (lighter blue) */
   --zus-blue-light: #5E6CB8;

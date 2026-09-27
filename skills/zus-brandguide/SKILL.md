@@ -24,11 +24,25 @@ Applies ZUS Coffee's official brand identity (Part 02, 2025) to any visual or wr
 | Luxury Gold | `#C9A063` | Supporting — accents, "Luxury" in tagline |
 | White | `#FFFFFF` | Primary — backgrounds, reversed type |
 
-### Logo rules (summary)
-- Full colour on white or light backgrounds
-- White version on dark / richly coloured backgrounds
-- Full colour on Luxury Gold / sand backgrounds
-- Never alter, stretch, add effects, or place on unapproved colours
+### Accent colours (official)
+| Name | Hex | Use |
+|---|---|---|
+| Sky Blue | `#17BBEF` | Fills, illustration. Never text on white (2.2:1). |
+| Fresh Green | `#48B249` | Fills, illustration. Never text on white (2.7:1). |
+| Sunny Yellow | `#FFE200` | Marketing highlights and CTAs on ZUS Blue (11.0:1). Never text on white (1.3:1), never white text on it. |
+| Vibrant Orange | `#EA5703` | Fills. Black text on it for small text. |
+| Classic Coffee Brown | `#522413` | Fills and text on white (13.0:1). Never with ZUS Blue. |
+| Elegant Black | `#000000` | Black logo configuration, text. |
+
+Accents are used **sparingly**. Full values, tints (90% to 10%) and the measured contrast table are in `references/brand-tokens.md` ("Accent Colours"). **Sunny Yellow + ZUS Blue: marketing only, 10% of the area or less, never a warning colour, never together with Luxury Gold, not in app UI.**
+
+### Logo rules (summary, Part 02 "Configurations")
+- Full colour on white or light backgrounds (default).
+- Black colour on white, only when full colour is technically impossible.
+- Inverted white on **solid ZUS Blue only** (only the logotype turns white).
+- Inverted black on **solid black only**.
+- Anything else (photos, graphite dark mode, gold, brown, tints): the full-colour logo on a white plate.
+- Never make a white or black logo with a CSS filter. Never alter, stretch or add effects.
 - Clear space = mark width on all sides
 
 ### Signature tagline
@@ -46,14 +60,18 @@ Applies ZUS Coffee's official brand identity (Part 02, 2025) to any visual or wr
 - 12 ready-made SVGs in `assets/icons/`: cup-hot, cup-iced, beans, mug, delivery, globe-cup, app-tap, gift, crown, store, cookie, star-trophy.
 - Use these for any ZUS artifact needing icons. The *full* official suite lives in the Company Brand PowerPoint template (not bundled here) — note that if a needed icon is missing.
 
-### Logo asset — PARTIALLY bundled
-- **Two official variants bundled**, both extracted from the brand team's own Adobe Illustrator files, not recreations:
-  - `assets/logo/zus-logomark-full-color-light-bg.svg` (+ .png) — circular Kaldi mark only, full colour, light background.
-  - `assets/logo/zus-vertical-lockup-full-color-light-bg.svg` (+ .png) — full stacked lockup: mark above "ZUS / COFFEE" wordmark, full colour, light background. Use this whenever an artifact needs the complete logo with wordmark, not a typographic text substitute.
-- **Still missing**: the horizontal lockup, wordmark-only, and the white/reversed version for dark or richly-coloured backgrounds. Do not fabricate these — ask the user for the additional files or pull from the Company Brand PowerPoint template.
-- Use whichever bundled variant matches the placement (symbol-only vs. full lockup). For horizontal or reversed placements, flag that the exact asset isn't bundled rather than substituting a redrawn one.
-- **Colour resolved (2026-07-12)**: primary ZUS Blue corrected to `#001688` to match the fill colour measured directly in the official logo files, replacing the earlier `#16277A` approximation. Both bundled logo variants measure the same `#001688`, consistent with each other. See `references/brand-tokens.md` for the full change note.
-- ⚠ **Hard guardrail, learned from a real mistake in this skill's own reference mockup**: both bundled logo files are full-colour fills on a transparent background, built for light backgrounds only. Placing them on ZUS Blue (or any dark/saturated background) makes the mark and wordmark visually disappear, blue-on-blue, not a rendering glitch, an actual invisible logo. No reversed/white asset is bundled yet. Never place these files on anything but a white/light background until a reversed variant exists — check contrast in your output plan before placing, don't discover it after.
+### Logo assets (`assets/logo/`, SVG + transparent PNG)
+| File | Configuration | Background |
+|---|---|---|
+| `zus-vertical-lockup-full-color-light-bg` / `zus-logomark-full-color-light-bg` | Full colour (official file) | White / light |
+| `zus-vertical-lockup-black-on-white` / `zus-logomark-black-on-white` | Black colour | White / light |
+| `zus-vertical-lockup-inverted-white-on-zus-blue` / `zus-logomark-inverted-white-on-zus-blue` | Inverted white | Solid `#001688` only |
+| `zus-vertical-lockup-inverted-black-on-black` / `zus-logomark-inverted-black-on-black` | Inverted black | Solid `#000000` only |
+
+- The full-colour files come from the brand team's Illustrator files. The black and inverted files are the same geometry with **fills changed only** (made 2026-09-27 from Part 02 "Configurations").
+- ⚠ **Match the file to its background.** An inverted file on any other colour shows a visible circle edge or an invisible mark. A full-colour file on ZUS Blue makes the logotype disappear (blue on blue).
+- **Still missing:** the horizontal lockup and wordmark-only. Do not rebuild them from the vertical file. Ask the user for the brand PDF or AI file.
+- ZUS Blue is `#001688`, measured from the official logo files (corrected 2026-07-12 from the earlier `#16277A` guess).
 
 ## Output rules
 
@@ -63,8 +81,8 @@ Applies ZUS Coffee's official brand identity (Part 02, 2025) to any visual or wr
 - *Legacy note:* earlier ZUS materials used Barlow Condensed (a wrong guess from before the type page was confirmed). Keep `'Barlow Condensed'` only as a CSS fallback in the font stack; do not design new work around it. Flag any existing deck still built on Barlow Condensed as off-brand.
 - Blue tint scale (10% → 100%) for backgrounds and UI layers
 - ZUS Blue is the primary background for hero sections
-- Gold is an accent, not a background (except logo reversed on sand/gold)
-- Secondary palette (Sky, Sage, Yellow, Burnt, Brown, Black) for seasonal or contextual use only — not as primary UI colors
+- Gold is an accent, not a background.
+- Accent colours (Sky Blue, Fresh Green, Sunny Yellow, Vibrant Orange, Classic Coffee Brown, Elegant Black) are used sparingly, as fills, never as primary UI colours. Use the measured text pairs in `references/brand-tokens.md`.
 - **Light and dark mode**: build with the `--brand-*` semantic tokens in `references/brand-tokens.md` (section "Semantic Tokens"). Gray does the work and ZUS Blue is the accent: body text is neutral ink, dark mode is neutral graphite (`#1C1C1E`), never navy. Separate neighbours by lightness, not only by hue.
 - **Apps, dashboards and portals**: also follow "App UI rules" in `references/brand-tokens.md` (no gold in app UI, Poppins for titles only, a UI face for tables, quiet row actions, a contrast audit).
 - **Logo in dark mode**: put the full-color logo on a white plate. Never put it straight on a dark background, and never make a white logo with a CSS filter.
