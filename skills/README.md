@@ -1,6 +1,6 @@
 # Design Skills Audit (2026-09-27)
 
-Edited copies of the claude.ai skills that had conflicts. To apply a fix, upload the zip from `dist/`. `brand-router` is a new skill, so you add it and do not replace anything. For the other skills, in claude.ai (Settings > Capabilities > Skills), which replaces the old version.
+Edited copies of the claude.ai skills that had conflicts. To apply them, upload each zip from `dist/` in claude.ai (Settings > Capabilities > Skills). Each zip replaces the old version of that skill. `brand-router` is a new skill, so it adds to your list and replaces nothing.
 
 ## Fixed
 
