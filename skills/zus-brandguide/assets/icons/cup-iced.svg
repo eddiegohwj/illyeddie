@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="ZUS iced cup">
+  <rect x="27" y="6" width="3" height="16" rx="1.5" fill="#C9A063" transform="rotate(18 28 14)"/>
+  <ellipse cx="24" cy="15" rx="9" ry="3" fill="#C9A063"/>
+  <polygon points="16,16 32,16 30,42 18,42" fill="#001688"/>
+  <rect x="20" y="22" width="6" height="6" rx="1" fill="#FFFFFF" transform="rotate(45 23 25)"/>
+  <rect x="21" y="31" width="5" height="5" rx="1" fill="#5E6CB8" transform="rotate(45 23.5 33.5)"/>
+</svg>

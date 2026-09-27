@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Motion Piece</title>
+<style>
+  @font-face { font-family: "Geist"; src: url("fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; }
+  :root {
+    /* THEME SLOT: values come from THEME in the script. Do not edit here. */
+    --canvas: #ECEAE6; --ink: #0B0B0B; --paper: #FFFFFF; --muted: #8A8784; --accent: #0B0B0B; --font: "Geist";
+  }
+  html, body { margin: 0; background: var(--canvas); }
+  #stage { position: relative; width: 1440px; height: 1440px; overflow: hidden; background: var(--canvas);
+           font-family: var(--font), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  /* No will-change anywhere: the camera scales #world and will-change makes scaled text blurry. */
+  #world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #shape { position: absolute; left: 0; top: 0; box-sizing: border-box; overflow: hidden; }
+  .layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .label { font-size: 30px; font-weight: 550; letter-spacing: -0.01em; white-space: nowrap; }
+  #cursor { position: absolute; left: 0; top: 0; width: 34px; height: 34px; transform-origin: 5px 3px; overflow: visible; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="shape">
+      <!-- One layer per state. Every state lives INSIDE the one shape: never a second element. -->
+      <div class="layer" id="L-button"><span class="label">Get started</span></div>
+      <div class="layer" id="L-loader">
+        <svg width="44" height="44" viewBox="0 0 44 44"><circle id="arc" cx="22" cy="22" r="17" fill="none" stroke-width="4" stroke-linecap="round"/></svg>
+      </div>
+      <div class="layer" id="L-check">
+        <svg width="44" height="44" viewBox="0 0 44 44"><path id="tick" d="M12 23 L19 30 L32 15" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="layer" id="L-done"><span class="label">Done</span></div>
+    </div>
+    <svg id="cursor" viewBox="0 0 34 34"><path d="M5 3 L5 27 L11.5 21 L16 31 L20 29.2 L15.6 19.4 L24 19.4 Z" fill="#0B0B0B" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   THEME: the only place colors and the font are set.
+   Default = mono (pure black and white). For one accent or a brand
+   theme (for example ZUS), see references/themes.md.
+   ============================================================ */
+const THEME = { canvas: "#ECEAE6", ink: "#0B0B0B", paper: "#FFFFFF", muted: "#8A8784", accent: "#0B0B0B", font: "Geist" };
+
+/* ============================================================
+   ENGINE (do not change): pure functions of time.
+   ============================================================ */
+const BPM = 120, BEAT = 60 / BPM;
+const BARS = 2;                           // demo = 2 bars. Set 7 (or 8) for the real piece.
+const D = BARS * 4 * BEAT;                // loop duration in seconds
+const b = (n) => n * BEAT;                // beat index (0-based, can be fractional) -> seconds
+const TAU = Math.PI * 2;
+
+// Spring presets: f = natural frequency (Hz), z = damping ratio. z >= 0.85 keeps overshoot under ~1%.
+const SPR = {
+  snap:   { f: 3.4, z: 0.86 },   // shape size, radius, content
+  soft:   { f: 2.2, z: 0.92 },   // large moves
+  cam:    { f: 1.6, z: 1.00 },   // camera: no overshoot
+  cursor: { f: 2.6, z: 1.00 },   // cursor travel
+  fade:   { f: 7.0, z: 1.00 },   // content swap opacity and blur
+  press:  { f: 9.0, z: 0.90 },   // click feedback
+  lead:   { f: 5.2, z: 0.88 },   // leading edge (tab indicator, toggle knob)
+  trail:  { f: 2.6, z: 0.95 },   // trailing edge
+};
+
+// Closed-form step response of a damped spring: 0 at t<=0, -> 1.
+function step(t, s = SPR.snap) {
+  if (t <= 0) return 0;
+  const w = TAU * s.f, z = s.z;
+  if (z >= 1) return 1 - Math.exp(-w * t) * (1 + w * t);
+  const wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + (z * w / wd) * Math.sin(wd * t));
+}
+
+const isArr = Array.isArray;
+const add = (a, c) => isArr(a) ? a.map((x, i) => x + c[i]) : a + c;
+const sub = (a, c) => isArr(a) ? a.map((x, i) => x - c[i]) : a - c;
+const mul = (a, k) => isArr(a) ? a.map((x) => x * k) : a * k;
+const same = (a, c) => isArr(a) ? a.every((x, i) => Math.abs(x - c[i]) < 1e-9) : Math.abs(a - c) < 1e-9;
+
+/* track(v0, [[t, v, spring?], ...]) -> (t) => value
+   A value that changes target many times is the SUM of one spring per change.
+   If the last target equals v0 the track is PERIODIC: the springs from the end of the
+   previous loop are added at the start, so frame D == frame 0, velocity included. */
+function track(v0, changes, def = SPR.snap) {
+  const deltas = []; let prev = v0;
+  for (const [ti, vi, s] of changes) { deltas.push([ti, sub(vi, prev), s || def]); prev = vi; }
+  const periodic = same(prev, v0);
+  return (t) => {
+    let v = v0;
+    for (const [ti, dv, s] of deltas) {
+      v = add(v, mul(dv, step(t - ti, s)));
+      if (periodic) v = add(v, mul(dv, step(t + D - ti, s) - 1));
+    }
+    return v;
+  };
+}
+
+/* drag(base, t0, t1, during, release): direct manipulation.
+   Before t0 -> base(t). While held -> during(t) (computed from the cursor).
+   After t1 -> springs from wherever it was back onto base(t). */
+function drag(base, t0, t1, during, release = SPR.snap) {
+  return (t) => {
+    if (t < t0) return base(t);
+    if (t <= t1) return during(t);
+    const off = during(t1) - base(t1);
+    return base(t) + off * (1 - step(t - t1, release));
+  };
+}
+
+// Rubber band past a limit: resistance grows the further you pull.
+function rubber(x, max, k = 0.55, range = 120) {
+  if (x <= max) return x;
+  const over = x - max;
+  return max + range * (1 - Math.exp(-over * k / range));
+}
+
+// Two edges on two springs: the leading edge moves first, the trailing edge catches up.
+// stops = [[t, left, right], ...]. Returns (t) => [left, right].
+function edges(l0, r0, stops) {
+  let pl = l0, pr = r0; const L = [], R = [];
+  for (const [ti, l, r] of stops) {
+    const right = (l + r) / 2 > (pl + pr) / 2;
+    L.push([ti, l, right ? SPR.trail : SPR.lead]);
+    R.push([ti, r, right ? SPR.lead : SPR.trail]);
+    pl = l; pr = r;
+  }
+  const tl = track(l0, L), tr = track(r0, R);
+  return (t) => [tl(t), tr(t)];
+}
+
+// Content swap: a 0/1 visibility track. Exit starts at T, the next layer enters at T + 0.07 s,
+// so outgoing and incoming text never sit on top of each other at full strength.
+const SWAP_GAP = 0.07;
+function vis(on0, flips) { return track(on0 ? 1 : 0, flips.map(([t, on]) => [t + (on ? SWAP_GAP : 0), on ? 1 : 0, SPR.fade])); }
+function press(times) { return track(1, times.flatMap((tp) => [[tp - 0.05, 0.9, SPR.press], [tp + 0.07, 1, SPR.press]])); }
+
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const rgb = (c) => `rgb(${c.map((x) => Math.round(Math.max(0, Math.min(255, x)))).join(",")})`;
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+/* ============================================================
+   SCORE: every change is placed on the beat grid with b(n).
+   EVENTS drive the UI sound mix: t = the visual hit, sfx = sound name.
+   ============================================================ */
+const EVENTS = [
+  { t: b(1), sfx: "click" },
+  { t: b(1.02), sfx: "pop" },
+  { t: b(4), sfx: "success" },
+  { t: b(5), sfx: "pop" },
+  { t: b(7), sfx: "click" },
+];
+
+// Shape size / radius / color. Button 300x92 -> loader 92 -> check 92 -> "Done" pill -> button.
+const W = track(300, [[b(1), 92], [b(5), 200], [b(7), 300]]);
+const H = track(92, []);
+const R = track(46, []);
+const BG = track(hex(THEME.ink), [[b(4), hex(THEME.accent)], [b(7), hex(THEME.ink)]]);
+
+// Content layers. Each flip = [time, on].
+const vButton = vis(1, [[b(1), 0], [b(7), 1]]);
+const vLoader = vis(0, [[b(1), 1], [b(4), 0]]);
+const vCheck  = vis(0, [[b(4), 1], [b(5), 0]]);
+const vDone   = vis(0, [[b(5), 1], [b(7), 0]]);
+const arcLen  = track(0.18, [[b(1.5), 0.72, SPR.soft], [b(3), 0.97, SPR.soft], [b(7), 0.18]]);
+const tickK   = track(0, [[b(4.1), 1, SPR.soft], [b(7), 0]]);
+
+// Camera: [scale, x, y] in world space. Each state fills the frame.
+const CAM = track([2.6, 0, 0], [[b(1.05), [4.2, 0, 0], SPR.cam], [b(5), [3.4, 0, 0], SPR.cam], [b(7), [2.6, 0, 0], SPR.cam]]);
+
+// Cursor path in world space (shape center = 0,0). It must rest at the same point at t=0 and t=D.
+const CX = track(150, [[b(0.3), 40, SPR.cursor], [b(2), 150, SPR.cursor], [b(6.2), 40, SPR.cursor], [b(7.4), 150, SPR.cursor]]);
+const CY = track(110, [[b(0.3), 12, SPR.cursor], [b(2), 110, SPR.cursor], [b(6.2), 12, SPR.cursor], [b(7.4), 110, SPR.cursor]]);
+const CPRESS = press([b(1), b(7)]);
+const SPRESS = press([b(1), b(7)]);
+
+/* ============================================================
+   RENDER: seek(t) writes every style from t. No transitions, no timers, no state.
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const el = { world: $("world"), shape: $("shape"), cursor: $("cursor"), arc: $("arc"), tick: $("tick"),
+  layers: { button: $("L-button"), loader: $("L-loader"), check: $("L-check"), done: $("L-done") } };
+const ARC_C = TAU * 17, TICK_L = 36;
+const CURSOR_PX = 52;  // on-screen cursor size, constant at every camera zoom
+
+function applyTheme() {
+  const r = document.documentElement.style;
+  for (const k of ["canvas", "ink", "paper", "muted", "accent"]) r.setProperty("--" + k, THEME[k]);
+  r.setProperty("--font", `"${THEME.font}"`);
+  el.arc.setAttribute("stroke", THEME.paper); el.tick.setAttribute("stroke", THEME.paper);
+  el.layers.button.style.color = THEME.paper; el.layers.done.style.color = THEME.paper;
+}
+
+function setLayer(node, o) {
+  node.style.opacity = o.toFixed(4);
+  node.style.filter = o > 0.999 ? "none" : `blur(${((1 - o) * 10).toFixed(2)}px)`;
+  node.style.transform = `scale(${(0.94 + 0.06 * o).toFixed(4)})`;
+  node.style.visibility = o < 0.002 ? "hidden" : "visible";
+}
+
+// raw = true skips the wrap. render.mjs --mode loop uses it to prove the math loops.
+function seek(tIn, raw = false) {
+  const t = raw ? tIn : ((tIn % D) + D) % D;
+  const [cs, cx, cy] = CAM(t);
+  el.world.style.transform = `translate(720px,720px) scale(${cs}) translate(${-cx}px,${-cy}px)`;
+
+  const w = W(t), h = H(t), r = Math.min(R(t), h / 2), k = SPRESS(t);
+  el.shape.style.width = w + "px"; el.shape.style.height = h + "px";
+  el.shape.style.borderRadius = r + "px";
+  el.shape.style.background = rgb(BG(t));
+  el.shape.style.transform = `translate(${-w / 2}px,${-h / 2}px) scale(${k})`;
+  el.shape.style.transformOrigin = `${w / 2}px ${h / 2}px`;
+
+  setLayer(el.layers.button, clamp01(vButton(t)));
+  setLayer(el.layers.loader, clamp01(vLoader(t)));
+  setLayer(el.layers.check, clamp01(vCheck(t)));
+  setLayer(el.layers.done, clamp01(vDone(t)));
+
+  const len = clamp01(arcLen(t));
+  el.arc.setAttribute("stroke-dasharray", `${ARC_C * len} ${ARC_C}`);
+  el.arc.setAttribute("transform", `rotate(${(t * 360 * 6 / D) % 360 - 90} 22 22)`);
+  el.tick.setAttribute("stroke-dasharray", `${TICK_L}`);
+  el.tick.setAttribute("stroke-dashoffset", `${TICK_L * (1 - clamp01(tickK(t)))}`);
+
+  el.cursor.style.transform = `translate(${CX(t) - 5}px,${CY(t) - 3}px) scale(${(CPRESS(t) * CURSOR_PX) / (34 * cs)})`;
+}
+
+applyTheme();
+window.seek = seek; window.DURATION = D; window.BPM = BPM; window.BARS = BARS; window.EVENTS = EVENTS;
+window.READY = document.fonts.ready.then(() => document.fonts.check(`40px "${THEME.font}"`));
+seek(0);
+</script>
+</body>
+</html>

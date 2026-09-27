@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Coffee beans">
+  <g transform="rotate(-20 24 24)">
+    <ellipse cx="18" cy="22" rx="7" ry="11" fill="#001688"/>
+    <path d="M18 12 C15 18 21 26 18 32" stroke="#FFFFFF" stroke-width="1.8" fill="none"/>
+    <ellipse cx="30" cy="26" rx="7" ry="11" fill="#C9A063"/>
+    <path d="M30 16 C27 22 33 30 30 36" stroke="#FFFFFF" stroke-width="1.8" fill="none"/>
+  </g>
+</svg>

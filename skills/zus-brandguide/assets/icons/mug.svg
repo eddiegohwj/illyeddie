@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Hot mug">
+  <path d="M14 16 C14 12 18 11 22 13 M22 9 C22 5 26 4 30 6" stroke="#C9A063" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M10 22 h22 v8 a11 11 0 0 1 -22 0 z" fill="#001688"/>
+  <path d="M32 23 a6 6 0 0 1 0 11" fill="none" stroke="#001688" stroke-width="3"/>
+  <rect x="9" y="40" width="24" height="3" rx="1.5" fill="#C9A063"/>
+</svg>
