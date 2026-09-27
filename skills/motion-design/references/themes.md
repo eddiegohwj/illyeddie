@@ -36,15 +36,15 @@ If a brand skill is installed (for example `zus-brandguide`), read its semantic 
 
 | THEME key | From the brand skill |
 |---|---|
-| `canvas` | `--brand-surface` (light) |
-| `ink` | `--brand-text` (light) |
+| `canvas` | a light tint of the brand color (ZUS: `#F0F1F8`, ZUS Blue 6%). A motion piece is a brand moment, so a tint is fine here. |
+| `ink` | `--brand-heading` (light) (ZUS: `#001688`) |
 | `paper` | `--brand-bg` (light) |
-| `muted` | `--brand-text-muted` (light) |
-| `accent` | `--brand-accent-2`, only if the brand allows it as a fill; else `--brand-accent` |
+| `muted` | the brand color at 70% on white (ZUS: `#4D5CAC`, 6.1:1) |
+| `accent` | `--brand-accent-2` if the brand allows it as a fill in brand moments (ZUS Gold); else `--brand-accent` |
 | `onAccent` | `--brand-on-accent` for that accent (ZUS: blue on gold, 5.9:1) |
-| `accentOnInk` | the dark-mode `--brand-accent-text` (ZUS: gold, 5.9:1 on blue) |
-| `mutedOnInk` | the dark-mode `--brand-text-muted` (ZUS: `#B8BBCB`, 7.5:1 on ZUS Blue) |
-| `line` | `--brand-border` (light) |
+| `accentOnInk` | the accent used on the ink fill (ZUS: gold, 5.9:1 on ZUS Blue) |
+| `mutedOnInk` | white at about 72% on the ink fill (ZUS: `#B8BBCB`, 7.5:1 on ZUS Blue) |
+| `line` | the brand color at 20% on white (ZUS: `#CCD0E7`) |
 | `font` | `--font-display`. Load the font file with `@font-face` (for Poppins: `npm pack @fontsource/poppins`, use the latin 500 and 600 woff2 files). |
 
 Example with the ZUS tokens as of 2026-09:

@@ -210,33 +210,52 @@
 
 These `--brand-*` keys are semantic: each key names a job, not a color. Build components with these keys, not with raw hex values. Then light and dark mode work with no extra code.
 
+> **Changed 2026-09-27.** The first version used saturated ZUS Blue surfaces in dark mode (`#000B44`, `#001688`) and ZUS Blue for all body text in light mode. A real app built with it was hard to read in both themes: elements differed only by hue (navy vs blue, red vs blue, gold vs blue), not by lightness. The tokens below follow the rule **"gray does the work, ZUS Blue is the accent"** (Stripe / Apple style). Every pair was measured (WCAG 2.x).
+
 | Key | Light | Dark | Use |
 |---|---|---|---|
-| `--brand-bg` | `#FFFFFF` | `#000B44` | Page background. Dark = ZUS Blue with 50% black [Derived]. |
-| `--brand-surface` | `#F0F1F8` | `#001688` | Cards, panels. Light = ZUS Blue 6% on white. |
-| `--brand-text` | `#001688` | `#FFFFFF` | Body and headings. 14.3:1 / 18.6:1. |
-| `--brand-text-muted` | `#4D5CAC` | `#B8BBCB` | Secondary text. Blue 70% (6.1:1) / White 72% (9.7:1). |
-| `--brand-border` | `#CCD0E7` | `#293262` | Dividers. Blue 20% / White 16%. |
-| `--brand-accent` | `#001688` | `#C9A063` | Button and highlight fills. |
-| `--brand-on-accent` | `#FFFFFF` | `#001688` | Text on an accent fill. 14.3:1 / 5.9:1. |
-| `--brand-accent-text` | `#001688` | `#C9A063` | Accent as text on the background. 14.3:1 / 7.7:1. |
-| `--brand-accent-2` | `#C9A063` | `#5E6CB8` | Decoration only (icons, rules, chart marks). Never text: 2.4:1 / 3.8:1. |
-| `--font-display` | `'Poppins', 'Barlow Condensed', sans-serif` | (same) | Headlines. |
-| `--font-body` | `'Poppins', 'Barlow', sans-serif` | (same) | Body. |
+| `--brand-bg` | `#FFFFFF` | `#1C1C1E` | Page background. Dark = neutral graphite, never navy. |
+| `--brand-surface` | `#F5F5F7` | `#2C2C2E` | Sidebars, panels, hover rows. Neutral gray, not a blue tint. |
+| `--brand-text` | `#1D1D1F` | `#F5F5F7` | Body text. 16.8:1 / 15.6:1. **Not ZUS Blue.** |
+| `--brand-text-muted` | `#6E6E73` | `#A1A1A6` | Secondary text. 5.1:1 on bg, 4.7:1 on surface / 6.6:1 on bg, 5.4:1 on surface. |
+| `--brand-heading` | `#001688` | `#C3CBF8` | Page titles and card titles only. 14.3:1 / 10.7:1. |
+| `--brand-border` | `#E5E5EA` | `#38383A` | Dividers and card edges (decorative). |
+| `--brand-border-control` | `#8A8A8E` | `#7C7C80` | Input and outline-button borders. 3.4:1 on bg / 3.4:1 on surface (controls need 3:1). |
+| `--brand-accent` | `#001688` | `#A9B5F3` | Primary button fill. Dark uses a LIGHT blue: a ZUS Blue fill on graphite is only 1.7 to 2.1:1 and disappears. Dark fill vs bg: 8.6:1. |
+| `--brand-on-accent` | `#FFFFFF` | `#001688` | Text on the accent fill. 14.3:1 / 7.2:1. |
+| `--brand-accent-text` | `#001688` | `#94A3F0` | Links and active nav text. 14.3:1 / 7.1:1 on bg. |
+| `--brand-accent-2` | `#C9A063` | `#C9A063` | Luxury Gold. **Brand moments only** (tagline, logo area, marketing). Not in app UI. Never text on white (2.4:1). |
+| `--font-display` | `'Poppins', 'Barlow Condensed', sans-serif` | (same) | Headlines and titles. |
+| `--font-body` | `'Poppins', 'Barlow', sans-serif` | (same) | Marketing body. For dense app UI see "App UI rules" below. |
 
 Rules:
-- **Gold text on white is 2.4:1. Never use it** for text in light mode. Gold is a text color only in dark mode.
-- **Logo in dark mode:** the bundled logos are for light backgrounds only (see SKILL.md guardrail). In dark mode, put the logo on a white plate (`#FFFFFF`, radius ≥ 8px, padding ≥ the clear-space rule). Never put it straight on `--brand-bg` or `--brand-surface`.
-- The tagline in dark mode: "a Necessity, not a" in White, "Luxury" in Luxury Gold.
+- **Separate by lightness, not by hue.** Two neighbours (text vs background, button vs page, active vs inactive) must differ in lightness, not only in color.
+- **Never put red, amber or gold text on a blue surface.** Status colors sit on neutral surfaces only.
+- **Logo:** full-color files only. In dark mode, put the logo on a white plate (`#FFFFFF`, radius ≥ 8px, padding ≥ the clear-space rule). Never make a white logo with a CSS filter.
+- The tagline "a Necessity, not a **Luxury**": light = `--brand-heading` + Gold; dark = `--brand-text` + Gold (gold on graphite 7.6:1).
+
+## App UI rules (dashboards, portals, internal tools)
+
+The brand guide describes marketing pieces. For apps people use all day, apply these on top:
+
+- ZUS Blue appears only on: the primary button (one per screen), links, the active nav item, page and card titles, and the logo. Body text, table text and labels are neutral.
+- Gold does not appear in app UI.
+- Type: Poppins for page titles, card titles and hero headlines. A UI face (Inter, 400/500/600, tabular numbers in tables) for nav, tables, forms and labels. Poppins is wide and tires the eye in dense tables.
+- Status: soft tinted pill with a written label. Light: danger `#B42318` on `#FEF3F2` (6.1:1), warning `#B54708` on `#FFFAEB` (5.2:1), success `#067647` on `#ECFDF3` (5.4:1). Dark: danger `#FDA29B` on `#4A2522` (6.9:1), warning `#FEC84B` on `#4A3714` (7.4:1), success `#75E0A7` on `#173D27` (7.5:1). Dark pills need a 1px border in their text color at 35% opacity, because the tint alone is only about 1.1:1 against the surface.
+- Row actions: quiet by default (ghost button + `•••` menu). Only a row that needs action gets a filled button.
+- Active nav state needs a non-color cue (weight 600 and a filled icon). A pale fill alone is about 1.1:1 against the sidebar.
+- Add a contrast audit to the build that checks these token pairs in both themes. A "token exists in both themes" check does not catch unreadable pairs.
 
 ```css
 /* ZUS Coffee: semantic tokens. Light is the default. */
 :root {
   --brand-bg: #FFFFFF;
-  --brand-surface: #F0F1F8;
-  --brand-text: #001688;
-  --brand-text-muted: #4D5CAC;
-  --brand-border: #CCD0E7;
+  --brand-surface: #F5F5F7;
+  --brand-text: #1D1D1F;
+  --brand-text-muted: #6E6E73;
+  --brand-heading: #001688;
+  --brand-border: #E5E5EA;
+  --brand-border-control: #8A8A8E;
   --brand-accent: #001688;
   --brand-on-accent: #FFFFFF;
   --brand-accent-text: #001688;
@@ -246,27 +265,31 @@ Rules:
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --brand-bg: #000B44;
-    --brand-surface: #001688;
-    --brand-text: #FFFFFF;
-    --brand-text-muted: #B8BBCB;
-    --brand-border: #293262;
-    --brand-accent: #C9A063;
+    color-scheme: dark;
+    --brand-bg: #1C1C1E;
+    --brand-surface: #2C2C2E;
+    --brand-text: #F5F5F7;
+    --brand-text-muted: #A1A1A6;
+    --brand-heading: #C3CBF8;
+    --brand-border: #38383A;
+    --brand-border-control: #7C7C80;
+    --brand-accent: #A9B5F3;
     --brand-on-accent: #001688;
-    --brand-accent-text: #C9A063;
-    --brand-accent-2: #5E6CB8;
+    --brand-accent-text: #94A3F0;
   }
 }
 :root[data-theme="dark"] {
-  --brand-bg: #000B44;
-  --brand-surface: #001688;
-  --brand-text: #FFFFFF;
-  --brand-text-muted: #B8BBCB;
-  --brand-border: #293262;
-  --brand-accent: #C9A063;
+  color-scheme: dark;
+  --brand-bg: #1C1C1E;
+  --brand-surface: #2C2C2E;
+  --brand-text: #F5F5F7;
+  --brand-text-muted: #A1A1A6;
+  --brand-heading: #C3CBF8;
+  --brand-border: #38383A;
+  --brand-border-control: #7C7C80;
+  --brand-accent: #A9B5F3;
   --brand-on-accent: #001688;
-  --brand-accent-text: #C9A063;
-  --brand-accent-2: #5E6CB8;
+  --brand-accent-text: #94A3F0;
 }
 ```
 
