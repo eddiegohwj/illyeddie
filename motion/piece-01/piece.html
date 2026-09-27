@@ -1,0 +1,469 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>One Shape</title>
+<style>
+  @font-face { font-family: "Geist"; src: url("fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; }
+  :root { --canvas: #ECEAE6; --ink: #0B0B0B; --paper: #FFFFFF; --muted: #8A8784; --accent: #0B0B0B; --font: "Geist"; --line: #E1DED9; }
+  html, body { margin: 0; background: var(--canvas); }
+  #stage { position: relative; width: 1440px; height: 1440px; overflow: hidden; background: var(--canvas);
+           font-family: var(--font), system-ui, sans-serif; -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1; }
+  #world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #shape { position: absolute; left: 0; top: 0; box-sizing: border-box; overflow: hidden; }
+  .layer { position: absolute; inset: 0; }
+  .c { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+  .at { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); white-space: nowrap; }
+  .atl { position: absolute; left: 0; top: 0; transform: translate(0, -50%); white-space: nowrap; }
+  .atr { position: absolute; left: 0; top: 0; transform: translate(-100%, -50%); white-space: nowrap; }
+  .label { font-size: 30px; font-weight: 560; letter-spacing: -0.01em; }
+  .tab { font-size: 26px; font-weight: 560; }
+  .ink { color: var(--ink); } .paper { color: var(--paper); } .muted { color: var(--muted); }
+  #pill { position: absolute; left: 0; top: 0; z-index: 1; }
+  #L-tabs { z-index: 2; }   /* labels sit above the indicator */
+  #cursor { position: absolute; left: 0; top: 0; width: 34px; height: 34px; transform-origin: 5px 3px; overflow: visible; }
+  svg { display: block; overflow: visible; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="shape">
+      <!-- 1 Button -->
+      <div class="layer" id="L-button"><div class="c"><span class="at label paper">Get started</span></div></div>
+      <!-- 2 Loader -->
+      <div class="layer" id="L-loader"><div class="c"><svg class="at" width="44" height="44" viewBox="0 0 44 44" style="left:0;top:0"><circle id="arc" cx="22" cy="22" r="17" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg></div></div>
+      <!-- 3 Check -->
+      <div class="layer" id="L-check"><div class="c"><svg class="at" width="44" height="44" viewBox="0 0 44 44"><path id="tick" d="M12 23 L19 30 L32 15" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+      <!-- 4 Dynamic island -->
+      <div class="layer" id="L-island"><div class="c">
+        <div class="at" style="left:-130px;width:52px;height:52px;border-radius:14px;background:var(--paper)"><div style="position:absolute;left:14px;top:14px;width:24px;height:24px;border-radius:12px;background:var(--ink)"></div></div>
+        <span class="atl paper" style="left:-88px;font-size:24px;font-weight:560">Midnight Loop</span>
+        <div id="wave" class="at" style="left:128px;width:44px;height:36px"></div>
+      </div></div>
+      <!-- 5 Music player -->
+      <div class="layer" id="L-player"><div class="c">
+        <div class="at" style="left:-170px;top:-42px;width:124px;height:124px;border-radius:18px;background:var(--ink)">
+          <div style="position:absolute;left:22px;top:22px;width:80px;height:80px;border-radius:40px;border:4px solid var(--paper);box-sizing:border-box"></div>
+          <div style="position:absolute;left:54px;top:54px;width:16px;height:16px;border-radius:8px;background:var(--paper)"></div>
+        </div>
+        <span class="atl ink" style="left:-86px;top:-66px;font-size:30px;font-weight:600;letter-spacing:-0.01em">Midnight Loop</span>
+        <span class="atl muted" style="left:-86px;top:-26px;font-size:24px;font-weight:500">Studio 120</span>
+        <div id="playbtn" class="at" style="left:186px;top:-42px;width:76px;height:76px;border-radius:38px;background:var(--ink)">
+          <svg width="76" height="76" viewBox="-38 -38 76 76"><path id="pp-l" fill="#fff"/><path id="pp-r" fill="#fff"/></svg>
+        </div>
+        <div class="atl" style="left:-220px;top:72px;width:440px;height:8px;border-radius:4px;background:var(--line)"></div>
+        <div id="prog-fill" class="atl" style="left:-220px;top:72px;height:8px;border-radius:4px;background:var(--ink)"></div>
+        <div id="prog-knob" class="at" style="top:72px;width:22px;height:22px;border-radius:11px;background:var(--ink)"></div>
+        <span id="t-now" class="atl muted" style="left:-220px;top:114px;font-size:22px;font-weight:500">1:00</span>
+        <span class="atr muted" style="left:220px;top:114px;font-size:22px;font-weight:500">3:20</span>
+      </div></div>
+      <!-- 6 Volume -->
+      <div class="layer" id="L-volume"><div class="c" id="vol-c">
+        <svg class="at" style="left:-186px" width="40" height="40" viewBox="0 0 40 40"><path d="M6 15 H12 L21 7 V33 L12 25 H6 Z M27 14 Q32 20 27 26" fill="none" stroke="#0B0B0B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div id="vol-track" class="atl" style="left:-150px;height:8px;border-radius:4px;background:var(--line)"></div>
+        <div id="vol-fill" class="atl" style="left:-150px;height:8px;border-radius:4px;background:var(--ink)"></div>
+      </div></div>
+      <!-- 7 Tabs (header of the chart too) -->
+      <div class="layer" id="L-tabs">
+        <div class="c paper"><span class="at tab" style="left:-160px">Day</span><span class="at tab" style="left:0">Week</span><span class="at tab" style="left:160px">Month</span></div>
+        <div id="tabs-ink" class="layer"><div class="c ink"><span class="at tab" style="left:-160px">Day</span><span class="at tab" style="left:0">Week</span><span class="at tab" style="left:160px">Month</span></div></div>
+      </div>
+      <!-- 8 Chart body -->
+      <div class="layer" id="L-chart"><div class="c">
+        <div id="band" class="atl" style="top:12px;height:236px;border-radius:14px;background:rgba(255,255,255,0.14)"></div>
+        <svg class="atl" style="left:-240px;top:0px;transform:none" width="480" height="1"><path id="line" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div id="axis">
+          <span class="at muted" style="left:-240px;top:156px;font-size:20px">Mon</span>
+          <span class="at muted" style="left:-80px;top:156px;font-size:20px">Wed</span>
+          <span class="at muted" style="left:80px;top:156px;font-size:20px">Fri</span>
+          <span class="at muted" style="left:240px;top:156px;font-size:20px">Sun</span>
+        </div>
+        <div id="tipdot" class="at" style="width:18px;height:18px;border-radius:9px;background:var(--paper);box-shadow:0 0 0 5px var(--ink)"></div>
+        <div id="tip" class="at" style="padding:8px 14px;border-radius:12px;background:var(--paper);font-size:24px;font-weight:600;color:var(--ink)"></div>
+        <div id="bandlbl" class="at" style="padding:8px 14px;border-radius:12px;background:var(--paper);font-size:24px;font-weight:600;color:var(--ink)">+18.4%</div>
+      </div></div>
+      <!-- 9 Command palette -->
+      <div class="layer" id="L-cmdk"><div class="c">
+        <svg id="mag" class="at" style="left:-222px" width="30" height="30" viewBox="0 0 30 30"><circle cx="13" cy="13" r="8.5" fill="none" stroke="#0B0B0B" stroke-width="3.5"/><path d="M19.5 19.5 L26 26" stroke="#0B0B0B" stroke-width="3.5" stroke-linecap="round"/></svg>
+        <span id="field" class="atl ink" style="left:-192px;font-size:28px;font-weight:500"><span id="typed"></span><span id="caret" style="display:inline-block;width:3px;height:30px;margin-left:2px;vertical-align:-5px;background:var(--ink)"></span></span>
+        <span id="ph" class="atl muted" style="left:-186px;font-size:28px;font-weight:500">Search commands</span>
+        <span id="kbd" class="atr muted" style="left:224px;font-size:22px;font-weight:600;padding:4px 10px;border-radius:8px;background:var(--canvas)">⌘K</span>
+        <div id="hl" class="atl" style="left:-244px;width:488px;height:52px;border-radius:12px;background:var(--canvas)"></div>
+        <div id="row0" class="atl" style="left:-222px;width:444px"><span class="ink" style="font-size:26px;font-weight:540">Save changes</span><span class="muted" style="position:absolute;right:0;font-size:22px">⌘S</span></div>
+        <div id="row1" class="atl" style="left:-222px;width:444px"><span class="ink" style="font-size:26px;font-weight:540">New chart</span><span class="muted" style="position:absolute;right:0;font-size:22px">⌘N</span></div>
+        <div id="row2" class="atl" style="left:-222px;width:444px"><span class="ink" style="font-size:26px;font-weight:540">Share link</span><span class="muted" style="position:absolute;right:0;font-size:22px">⌘L</span></div>
+        <div id="row3" class="atl" style="left:-222px;width:444px"><span class="ink" style="font-size:26px;font-weight:540">Open player</span><span class="muted" style="position:absolute;right:0;font-size:22px">⌘P</span></div>
+      </div></div>
+      <!-- 10 Toast -->
+      <div class="layer" id="L-toast"><div class="c">
+        <svg class="at" style="left:-52px" width="36" height="36" viewBox="0 0 44 44"><path d="M12 23 L19 30 L32 15" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="atl label paper" style="left:-24px">Saved</span>
+      </div></div>
+      <!-- The knob: volume knob -> toggle knob -> tab indicator. One element. -->
+      <div id="pill"></div>
+    </div>
+    <svg id="cursor" viewBox="0 0 34 34"><path d="M5 3 L5 27 L11.5 21 L16 31 L20 29.2 L15.6 19.4 L24 19.4 Z" fill="#0B0B0B" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+
+<script>
+const THEME = { canvas: "#ECEAE6", ink: "#0B0B0B", paper: "#FFFFFF", muted: "#8A8784", accent: "#0B0B0B", font: "Geist" };
+/* ============================================================
+   ENGINE (do not change): pure functions of time.
+   ============================================================ */
+const BPM = 120, BEAT = 60 / BPM;
+const BARS = 8;
+const D = BARS * 4 * BEAT;                // loop duration in seconds
+const b = (n) => n * BEAT;                // beat index (0-based, can be fractional) -> seconds
+const TAU = Math.PI * 2;
+
+// Spring presets: f = natural frequency (Hz), z = damping ratio. z >= 0.85 keeps overshoot under ~1%.
+const SPR = {
+  snap:   { f: 3.4, z: 0.86 },   // shape size, radius, content
+  soft:   { f: 2.2, z: 0.92 },   // large moves
+  cam:    { f: 1.6, z: 1.00 },   // camera: no overshoot
+  cursor: { f: 2.6, z: 1.00 },   // cursor travel
+  fade:   { f: 7.0, z: 1.00 },   // content swap opacity and blur
+  press:  { f: 9.0, z: 0.90 },   // click feedback
+  lead:   { f: 5.2, z: 0.88 },   // leading edge (tab indicator, toggle knob)
+  trail:  { f: 2.6, z: 0.95 },   // trailing edge
+};
+
+// Closed-form step response of a damped spring: 0 at t<=0, -> 1.
+function step(t, s = SPR.snap) {
+  if (t <= 0) return 0;
+  const w = TAU * s.f, z = s.z;
+  if (z >= 1) return 1 - Math.exp(-w * t) * (1 + w * t);
+  const wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + (z * w / wd) * Math.sin(wd * t));
+}
+
+const isArr = Array.isArray;
+const add = (a, c) => isArr(a) ? a.map((x, i) => x + c[i]) : a + c;
+const sub = (a, c) => isArr(a) ? a.map((x, i) => x - c[i]) : a - c;
+const mul = (a, k) => isArr(a) ? a.map((x) => x * k) : a * k;
+const same = (a, c) => isArr(a) ? a.every((x, i) => Math.abs(x - c[i]) < 1e-9) : Math.abs(a - c) < 1e-9;
+
+/* track(v0, [[t, v, spring?], ...]) -> (t) => value
+   A value that changes target many times is the SUM of one spring per change.
+   If the last target equals v0 the track is PERIODIC: the springs from the end of the
+   previous loop are added at the start, so frame D == frame 0, velocity included. */
+function track(v0, changes, def = SPR.snap) {
+  const deltas = []; let prev = v0;
+  for (const [ti, vi, s] of changes) { deltas.push([ti, sub(vi, prev), s || def]); prev = vi; }
+  const periodic = same(prev, v0);
+  return (t) => {
+    let v = v0;
+    for (const [ti, dv, s] of deltas) {
+      v = add(v, mul(dv, step(t - ti, s)));
+      if (periodic) v = add(v, mul(dv, step(t + D - ti, s) - 1));
+    }
+    return v;
+  };
+}
+
+/* drag(base, t0, t1, during, release): direct manipulation.
+   Before t0 -> base(t). While held -> during(t) (computed from the cursor).
+   After t1 -> springs from wherever it was back onto base(t). */
+function drag(base, t0, t1, during, release = SPR.snap) {
+  return (t) => {
+    if (t < t0) return base(t);
+    if (t <= t1) return during(t);
+    const off = during(t1) - base(t1);
+    return base(t) + off * (1 - step(t - t1, release));
+  };
+}
+
+// Rubber band past a limit: resistance grows the further you pull.
+function rubber(x, max, k = 0.55, range = 120) {
+  if (x <= max) return x;
+  const over = x - max;
+  return max + range * (1 - Math.exp(-over * k / range));
+}
+
+// Two edges on two springs: the leading edge moves first, the trailing edge catches up.
+// stops = [[t, left, right], ...]. Returns (t) => [left, right].
+function edges(l0, r0, stops) {
+  let pl = l0, pr = r0; const L = [], R = [];
+  for (const [ti, l, r] of stops) {
+    const right = (l + r) / 2 > (pl + pr) / 2;
+    L.push([ti, l, right ? SPR.trail : SPR.lead]);
+    R.push([ti, r, right ? SPR.lead : SPR.trail]);
+    pl = l; pr = r;
+  }
+  const tl = track(l0, L), tr = track(r0, R);
+  return (t) => [tl(t), tr(t)];
+}
+
+// Content swap: a 0/1 visibility track. Exit starts at T, the next layer enters at T + 0.07 s,
+// so outgoing and incoming text never sit on top of each other at full strength.
+const SWAP_GAP = 0.07;
+function vis(on0, flips) { return track(on0 ? 1 : 0, flips.map(([t, on]) => [t + (on ? SWAP_GAP : 0), on ? 1 : 0, SPR.fade])); }
+function press(times) { return track(1, times.flatMap((tp) => [[tp - 0.05, 0.9, SPR.press], [tp + 0.07, 1, SPR.press]])); }
+
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const rgb = (c) => `rgb(${c.map((x) => Math.round(Math.max(0, Math.min(255, x)))).join(",")})`;
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+
+/* ============================================================
+   SCORE: 8 bars, 32 beats. B(k) = time of beat k (1-based, matches the approved grid).
+   ============================================================ */
+const B = (k) => b(k - 1);
+const INK = hex(THEME.ink), PAPER = hex(THEME.paper);
+const LEAD = 0.4;                                  // cursor leaves this long before a click
+
+const EVENTS = [
+  { t: B(2), sfx: "click" }, { t: B(4), sfx: "success" }, { t: B(5), sfx: "pop" }, { t: B(6), sfx: "swipe" },
+  { t: B(7), sfx: "click" }, { t: B(8), sfx: "tick" }, { t: B(10), sfx: "tick" }, { t: B(11), sfx: "pop" },
+  { t: B(14), sfx: "tick" }, { t: B(15), sfx: "pop" }, { t: B(16), sfx: "toggle" }, { t: B(17), sfx: "pop" },
+  { t: B(18), sfx: "click" }, { t: B(19), sfx: "click" }, { t: B(20), sfx: "swipe" }, { t: B(22), sfx: "tick" },
+  { t: B(23), sfx: "tick" }, { t: B(24), sfx: "tick" }, { t: B(26), sfx: "pop" }, { t: B(27), sfx: "swipe" },
+  { t: B(28), sfx: "tick" }, { t: B(29), sfx: "key" }, { t: B(29.5), sfx: "key" }, { t: B(30), sfx: "tick" },
+  { t: B(31), sfx: "toast" }, { t: B(32), sfx: "pop" },
+];
+
+// ---- Cursor (world space, shape center = 0,0). Rests at HOME at t=0 and t=D.
+const HOME = [150, 112];
+const CUR = [
+  [B(2) - LEAD, [40, 14]],            // to the button
+  [B(2) + 0.18, [150, 130]],          // off, out of the loader's way
+  [B(7) - LEAD - 0.1, [186, -34]],    // to play
+  [B(8) - LEAD, [-88, 78]],           // to the progress knob (p = 0.3)
+  [B(8) + 0.1, [-10, 78]],           // scrub part 1 (held)
+  [B(9), [110, 78]],                  // scrub part 2: still moving on beat 9
+  [B(10) + 0.12, [120, 130]],         // after release
+  [B(12) - LEAD, [-31, 6]],           // to the volume knob
+  [B(12) + 0.08, [190, 6]],           // drag to max
+  [B(13), [330, 6]],                  // past max (rubber)
+  [B(14) + 0.1, [200, 60]],           // release, move off
+  [B(16) - LEAD, [14, 10]],           // to the toggle
+  [B(16) + 0.15, [60, 70]],
+  [B(18) - LEAD, [4, 8]],             // tab 2
+  [B(19) - LEAD, [164, 8]],           // tab 3
+  [B(20) + 0.1, [200, 90]],           // out of the way while the chart opens
+  [B(22) - LEAD, [-80, 54]],          // hover A (under the line)
+  [B(23) - LEAD, [60, 25]],           // hover B
+  [B(24) - LEAD, [-120, 60]],         // range start
+  [B(24) + 0.12, [140, 60]],          // range drag (held)
+  [B(27) - 0.1, [240, 150]],          // away for the palette
+  [B(32) - 0.05, HOME],               // home for the loop
+];
+const CXY = track(HOME, CUR.map(([t, p]) => [t, p, SPR.cursor]));
+const CX = (t) => CXY(t)[0], CY = (t) => CXY(t)[1];
+const HOLD = [[B(8), B(10)], [B(12), B(14)], [B(24), B(26)]];
+const CPRESS = track(1, [
+  ...[B(2), B(7), B(16), B(18), B(19)].flatMap((tp) => [[tp - 0.05, 0.86, SPR.press], [tp + 0.07, 1, SPR.press]]),
+  ...HOLD.flatMap(([a, c]) => [[a - 0.05, 0.86, SPR.press], [c + 0.02, 1, SPR.press]]),
+]);
+const SPRESS = press([B(2), B(16)]);
+const PLAYPRESS = press([B(7)]);
+
+// ---- Volume drag: knob follows the cursor, past max the whole slider stretches (rubber band).
+const VMAX = 190, VMIN = -150;
+const knobWorld = (t) => { const x = CX(t); return x <= VMAX ? Math.max(VMIN, x) : rubber(x, VMAX, 0.6, 110); };
+const extDuring = (t) => Math.max(0, knobWorld(t) - VMAX);
+const EXT = drag(() => 0, B(12), B(14), extDuring, SPR.snap);   // extra width, springs back on release
+const SX = (t) => EXT(t) / 2;                                   // grow to the right only
+
+// ---- Shape: size, radius, color. One element for the whole piece.
+const WB = track(300, [[B(2), 92], [B(5), 360], [B(6), 520], [B(11), 440], [B(15), 120], [B(17), 480], [B(20), 560], [B(27), 520], [B(32), 300]]);
+const W = (t) => WB(t) + EXT(t);
+const H = track(92, [[B(5), 96], [B(6), 300], [B(11), 64], [B(17), 72], [B(20), 380], [B(27), 84], [B(28), 340], [B(29), 220], [B(29.5), 160], [B(31), 72], [B(32), 92]]);
+const R = track(46, [[B(5), 48], [B(6), 36], [B(11), 32], [B(17), 36], [B(20), 28], [B(27), 24], [B(31), 36], [B(32), 46]]);
+const BG = track(INK, [[B(6), PAPER], [B(16), INK], [B(27), PAPER], [B(31), INK]]);
+
+// ---- Camera: [scale, x, y]. Each state fills about 60% of the frame. Beat 3 pushes in on the loader.
+const CAM = track([2.8, 0, 0], [
+  [B(2), [3.4, 0, 0]], [B(3), [4.4, 0, 0]], [B(5), [2.3, 0, 0]], [B(6), [1.62, 0, 0]], [B(11), [1.9, 0, 0]],
+  [B(15), [3.9, 0, 0]], [B(17), [1.75, 0, 0]], [B(20), [1.48, 0, 0]], [B(27), [1.62, 0, 0]], [B(28), [1.55, 0, 0]],
+  [B(29.5), [1.75, 0, 0]], [B(31), [3.0, 0, 0]], [B(32), [2.8, 0, 0]],
+].map(([t, v], i, arr) => {
+  // Zoom out (shape grows): lead the shape. Zoom in (shape shrinks): lag it. The shape never leaves the frame.
+  const prev = i ? arr[i - 1][1][0] : 2.8, zoomIn = v[0] > prev;
+  return [zoomIn ? t + 0.1 : t - 0.06, v, zoomIn ? { f: 2.0, z: 1 } : { f: 2.4, z: 1 }];
+}));
+
+// ---- Content visibility (exit at T, enter at T + SWAP_GAP).
+const V = {
+  button: vis(1, [[B(2), 0], [B(32), 1]]),
+  loader: vis(0, [[B(2), 1], [B(4), 0]]),
+  check:  vis(0, [[B(4), 1], [B(5), 0]]),
+  island: vis(0, [[B(5), 1], [B(6), 0]]),
+  player: vis(0, [[B(6), 1], [B(11), 0]]),
+  volume: vis(0, [[B(11), 1], [B(15), 0]]),
+  pill:   vis(0, [[B(11), 1], [B(27), 0]]),
+  tabs:   vis(0, [[B(17), 1], [B(27), 0]]),
+  chart:  vis(0, [[B(20), 1], [B(27), 0]]),
+  axis:   vis(0, [[B(21), 1], [B(27), 0]]),
+  tip:    vis(0, [[B(22), 1], [B(24), 0]]),
+  band:   vis(0, [[B(24), 1], [B(27), 0]]),
+  bandl:  vis(0, [[B(26), 1], [B(27), 0]]),
+  cmdk:   vis(0, [[B(27), 1], [B(31), 0]]),
+  ph:     vis(0, [[B(27), 1], [B(29), 0]]),
+  row0:   vis(0, [[B(28), 1], [B(31), 0]]),
+  row1:   vis(0, [[B(28) + 0.06, 1], [B(29), 0]]),
+  row2:   vis(0, [[B(28) + 0.12, 1], [B(31), 0]]),
+  row3:   vis(0, [[B(28) + 0.18, 1], [B(29), 0]]),
+  hl:     vis(0, [[B(30), 1], [B(31), 0]]),
+  toast:  vis(0, [[B(31), 1], [B(32), 0]]),
+};
+V.row2 = vis(0, [[B(28) + 0.12, 1], [B(29.5), 0]]);            // "Share link" survives "s", not "sa"
+
+// ---- Loader + check (from the template)
+const arcLen = track(0.18, [[B(2.5), 0.72, SPR.soft], [B(3.4), 0.97, SPR.soft], [B(28), 0.18]]);
+const tickK  = track(0, [[B(4) + 0.06, 1, SPR.soft], [B(28), 0]]);
+
+// ---- Player: play -> pause morph, scrub by direct manipulation.
+const PP = track(0, [[B(7), 1], [B(28), 0]]);
+const P0 = 0.3, P1 = (110 + 220) / 440;
+const PROG = drag(track(P0, [[B(8), P1], [B(28), P0]]), B(8), B(10), (t) => clamp01((CX(t) + 220) / 440));
+const KNOBS = track(1, [[B(8), 1.55], [B(10), 1]]);
+
+// ---- The knob: volume knob -> toggle knob -> tab indicator. Two edges on two springs.
+const vx0 = -31;
+const PE = edges(vx0 - 14, vx0 + 14, [
+  [B(12), VMAX - 14, VMAX + 14], [B(15), -52, -4], [B(16), 4, 52],
+  [B(17), -235, -85], [B(18), -75, 75], [B(19), 85, 235], [B(28), vx0 - 14, vx0 + 14],
+]);
+const knobLocalDuring = (t) => knobWorld(t) - SX(t);
+const PL = drag((t) => PE(t)[0], B(12), B(14), (t) => knobLocalDuring(t) - 14);
+const PR = drag((t) => PE(t)[1], B(12), B(14), (t) => knobLocalDuring(t) + 14);
+const PH = track(28, [[B(15), 48], [B(17), 56], [B(28), 28]]);
+const PYT = track(0, [[B(20), -146], [B(28), 0]]);            // the tab row moves up into the chart header
+const PC = track(INK, [[B(16), PAPER], [B(28), INK]]);
+
+// ---- Chart
+const XS = [...Array(8)].map((_, i) => -240 + i * 480 / 7);
+const VS = [0.30, 0.42, 0.38, 0.55, 0.50, 0.68, 0.62, 0.82];
+const YS = VS.map((v) => 120 - v * 220);
+const LINE_D = XS.map((x, i) => `${i ? "L" : "M"}${(x + 240).toFixed(1)} ${YS[i].toFixed(1)}`).join(" ");
+const yAt = (x) => { const u = clamp01((x + 240) / 480) * 7, i = Math.min(6, Math.floor(u)), f = u - i; return YS[i] * (1 - f) + YS[i + 1] * f; };
+const vAt = (x) => { const u = clamp01((x + 240) / 480) * 7, i = Math.min(6, Math.floor(u)), f = u - i; return VS[i] * (1 - f) + VS[i + 1] * f; };
+const DRAW = track(0, [[B(21), 1, SPR.soft], [B(28), 0]]);
+const RX1 = drag(track(-120, [[B(24), 140], [B(28), -120]]), B(24), B(26), (t) => Math.max(-120, Math.min(240, CX(t))));
+
+// ---- Command palette
+const SLOT2 = track(2, [[B(29), 1], [B(32), 2]]);          // "Share link" moves up after "s"
+const typedAt = (t) => (t >= B(29.5) && t < B(31) + 0.1 ? "sa" : t >= B(29) && t < B(31) + 0.1 ? "s" : "");
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const L = {}; for (const k of ["button", "loader", "check", "island", "player", "volume", "tabs", "chart", "cmdk", "toast"]) L[k] = $("L-" + k);
+const el = { world: $("world"), shape: $("shape"), cursor: $("cursor"), arc: $("arc"), tick: $("tick"), pill: $("pill"),
+  wave: $("wave"), ppl: $("pp-l"), ppr: $("pp-r"), playbtn: $("playbtn"), pfill: $("prog-fill"), pknob: $("prog-knob"), tnow: $("t-now"),
+  vtrack: $("vol-track"), volc: $("vol-c"), vfill: $("vol-fill"), tabs: [...document.querySelectorAll("#L-tabs .tab")], tabsInk: $("tabs-ink"), line: $("line"), axis: $("axis"),
+  tip: $("tip"), tipdot: $("tipdot"), band: $("band"), bandl: $("bandlbl"), typed: $("typed"), caret: $("caret"), ph: $("ph"),
+  field: $("field"), mag: $("mag"), kbd: $("kbd"), hl: $("hl"), rows: [$("row0"), $("row1"), $("row2"), $("row3")] };
+const ARC_C = TAU * 17, TICK_L = 36, CURSOR_PX = 52;
+el.line.setAttribute("d", LINE_D);
+const LINE_LEN = el.line.getTotalLength();
+for (let i = 0; i < 4; i++) { const d = document.createElement("div"); d.style.cssText = "position:absolute;bottom:0;width:7px;border-radius:4px;background:#fff;left:" + (i * 12.3) + "px"; el.wave.appendChild(d); }
+const waveBars = [...el.wave.children];
+
+function setLayer(node, o, scaleIn = true) {
+  o = clamp01(o);
+  node.style.opacity = o.toFixed(4);
+  node.style.filter = o > 0.999 ? "none" : `blur(${((1 - o) * 10).toFixed(2)}px)`;
+  if (scaleIn) node.style.transform = `scale(${(0.94 + 0.06 * o).toFixed(4)})`;
+  node.style.visibility = o < 0.002 ? "hidden" : "visible";
+}
+const pos = (node, x, y) => { node.style.left = x + "px"; node.style.top = y + "px"; };
+const lerp = (a, c, k) => a + (c - a) * k;
+const quad = (A, Bq, k) => "M" + A.map((p, i) => `${lerp(p[0], Bq[i][0], k).toFixed(2)} ${lerp(p[1], Bq[i][1], k).toFixed(2)}`).join(" L") + " Z";
+const PLAY_L = [[-9, -13], [3, -6], [3, 6], [-9, 13]], PAUSE_L = [[-10, -13], [-3, -13], [-3, 13], [-10, 13]];
+const PLAY_R = [[3, -6], [14, 0], [14, 0], [3, 6]], PAUSE_R = [[3, -13], [10, -13], [10, 13], [3, 13]];
+const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+function seek(tIn, raw = false) {
+  const t = raw ? tIn : ((tIn % D) + D) % D;
+  const [cs, cx, cy] = CAM(t);
+  const camX = cx + SX(t);                      // follow the rubber stretch so the slider stays in frame
+  el.world.style.transform = `translate(720px,720px) scale(${cs}) translate(${-camX}px,${-cy}px)`;
+
+  // Shape
+  const w = W(t), h = H(t), r = Math.min(R(t), h / 2), k = SPRESS(t), sx = SX(t);
+  Object.assign(el.shape.style, { width: w + "px", height: h + "px", borderRadius: r + "px", background: rgb(BG(t)),
+    transform: `translate(${sx - w / 2}px,${-h / 2}px) scale(${k})`, transformOrigin: `${w / 2}px ${h / 2}px` });
+
+  // Layers
+  setLayer(L.button, V.button(t)); setLayer(L.loader, V.loader(t)); setLayer(L.check, V.check(t));
+  setLayer(L.island, V.island(t)); setLayer(L.player, V.player(t)); setLayer(L.volume, V.volume(t));
+  setLayer(L.tabs, V.tabs(t), false); setLayer(L.chart, V.chart(t)); setLayer(L.cmdk, V.cmdk(t)); setLayer(L.toast, V.toast(t));
+
+  // Loader / check
+  el.arc.setAttribute("stroke-dasharray", `${ARC_C * clamp01(arcLen(t))} ${ARC_C}`);
+  el.arc.setAttribute("transform", `rotate(${(t * 360 * 12 / D) % 360 - 90} 22 22)`);
+  el.tick.setAttribute("stroke-dasharray", `${TICK_L}`);
+  el.tick.setAttribute("stroke-dashoffset", `${TICK_L * (1 - clamp01(tickK(t)))}`);
+
+  // Island waveform (periodic in D)
+  waveBars.forEach((bar, i) => { bar.style.height = (10 + 22 * Math.abs(Math.sin(TAU * (20 + 4 * i) * t / D + i))).toFixed(1) + "px"; });
+
+  // Player
+  const pp = clamp01(PP(t));
+  el.ppl.setAttribute("d", quad(PLAY_L, PAUSE_L, pp)); el.ppr.setAttribute("d", quad(PLAY_R, PAUSE_R, pp));
+  el.playbtn.style.transform = `translate(-50%,-50%) scale(${PLAYPRESS(t)})`;
+  const p = PROG(t), px = -220 + 440 * p;
+  el.pfill.style.width = (px + 220) + "px";
+  pos(el.pknob, px, 76); el.pknob.style.transform = `translate(-50%,-50%) scale(${KNOBS(t)})`;
+  el.tnow.textContent = fmt(p * 200);
+
+  // Volume
+  const ext = EXT(t), pl = PL(t), pr = PR(t), knobC = (pl + pr) / 2;
+  // The volume layer is anchored to the world, so the track stays put while the shape stretches right.
+  el.volc.style.left = `calc(50% - ${sx}px)`;
+  el.vtrack.style.width = (VMAX - VMIN + ext) + "px";
+  el.vfill.style.width = Math.max(0, knobC + sx - VMIN) + "px";
+
+  // The knob (pill)
+  const ph = PH(t), py = PYT(t), po = clamp01(V.pill(t));
+  Object.assign(el.pill.style, { left: (w / 2 + pl) + "px", top: (h / 2 + py - ph / 2) + "px", width: Math.max(ph * 0.5, pr - pl) + "px",
+    height: ph + "px", borderRadius: ph / 2 + "px", background: rgb(PC(t)), opacity: po.toFixed(4), visibility: po < 0.002 ? "hidden" : "visible" });
+
+  // Tabs: white labels, plus black labels clipped to the indicator, so a label is split exactly at its edge.
+  el.tabs.forEach((n) => { n.style.top = py + "px"; });
+  const ct = h / 2 + py - ph / 2, cl = w / 2 + pl, cw = Math.max(ph * 0.5, pr - pl);
+  el.tabsInk.style.clipPath = `inset(${ct}px ${w - cl - cw}px ${h - ct - ph}px ${cl}px round ${ph / 2}px)`;
+
+  // Chart
+  const top = -h / 2;
+  el.line.parentNode.style.top = "0px";
+  el.line.setAttribute("stroke-dasharray", `${LINE_LEN}`);
+  el.line.setAttribute("stroke-dashoffset", `${LINE_LEN * (1 - clamp01(DRAW(t)))}`);
+  setLayer(el.axis, V.axis(t), false);
+  const hx = Math.max(-240, Math.min(240, CX(t))), hy = yAt(hx), ot = clamp01(V.tip(t));
+  pos(el.tipdot, hx, hy); pos(el.tip, hx, hy - 52);
+  el.tip.textContent = "$" + Math.round(1000 + vAt(hx) * 2000).toLocaleString("en-US");
+  setLayer(el.tip, ot, false); setLayer(el.tipdot, ot, false);
+  el.tip.style.transform = el.tipdot.style.transform = "translate(-50%,-50%)";
+  const x1 = RX1(t), ob = clamp01(V.band(t));
+  pos(el.band, Math.min(-120, x1), -110); el.band.style.width = Math.abs(x1 + 120) + "px"; el.band.style.height = "240px"; el.band.style.transform = "none";
+  el.band.style.opacity = ob.toFixed(4); el.band.style.visibility = ob < 0.002 ? "hidden" : "visible";
+  pos(el.bandl, (-120 + x1) / 2, -80); setLayer(el.bandl, V.bandl(t), false); el.bandl.style.transform = "translate(-50%,-50%)";
+
+  // Command palette (everything rides on the top edge)
+  const fy = top + 42;
+  pos(el.mag, -222, fy); pos(el.field, -192, fy); pos(el.ph, -186, fy); pos(el.kbd, 224, fy);
+  el.typed.textContent = typedAt(t);
+  el.caret.style.opacity = (Math.floor(t / BEAT) % 2 === 0) ? "1" : "0";
+  setLayer(el.ph, V.ph(t), false); el.ph.style.transform = "translate(0,-50%)";
+  const slotY = (s) => top + 84 + 8 + 30 + s * 60;
+  const slots = [0, 1, SLOT2(t), 3];
+  el.rows.forEach((n, i) => { pos(n, -222, slotY(slots[i])); setLayer(n, V["row" + i](t), false); n.style.transform = "translate(0,-50%)"; });
+  pos(el.hl, -244, slotY(0)); setLayer(el.hl, V.hl(t), false); el.hl.style.transform = "translate(0,-50%)";
+
+  // Cursor: constant on-screen size
+  el.cursor.style.transform = `translate(${CX(t) - 5}px,${CY(t) - 3}px) scale(${(CPRESS(t) * CURSOR_PX) / (34 * cs)})`;
+}
+
+document.documentElement.style.setProperty("--font", `"${THEME.font}"`);
+window.seek = seek; window.DURATION = D; window.BPM = BPM; window.BARS = BARS; window.EVENTS = EVENTS;
+window.READY = document.fonts.ready.then(() => document.fonts.check(`40px "${THEME.font}"`));
+seek(0);
+</script>
+</body>
+</html>

@@ -41,3 +41,6 @@
 6. **Sound timing**: sounds are placed by their MEASURED peak, not their file start. A sound with a slow attack (swipe) peaks about 65 ms after it starts.
 7. **Beat detection**: the FFT onset envelope runs 20-45 ms early. `beatgrid.py` corrects this with a 1 ms time-domain fit. Tested error on a synthetic track: < 5 ms.
 8. **Fonts**: `render.mjs` stops if the theme font did not load. A fallback font changes widths and breaks the layout.
+9. **Camera timing**: lead the shape when the camera zooms OUT (the shape grows), and lag it when the camera zooms IN (the shape shrinks). If the camera always leads, a shrinking state is cropped. If it always lags, a growing state is cropped. (Found on piece-01, beats 17 and 31.)
+10. **Camera follows stretches**: when a drag stretches the shape (rubber band), add the shape's offset to the camera x, or the stretched part leaves the frame.
+11. **Segmented control labels**: never fade a label's color by its distance from the indicator (it goes gray mid-move). Draw the labels twice: a base set, and an inverted set clipped to the indicator with `clip-path: inset(... round r)`. A label then splits exactly at the indicator edge.
